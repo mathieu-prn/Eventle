@@ -1,0 +1,27 @@
+{
+  "name": "eventle",
+  "version": "1.0.0",
+  "description": "Daily game about historical events",
+  "main": "index.js",
+  "scripts": {
+    "client": "cd client && npm run serve",
+    "server": "cd server && node app.js",
+    "dev": "concurrently --kill-others \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathieu-prn/Eventle.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mathieu-prn/Eventle/issues"
+  },
+  "homepage": "https://github.com/mathieu-prn/Eventle#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}
