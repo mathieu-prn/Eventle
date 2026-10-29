@@ -24,11 +24,8 @@ h1 {
   margin: 30px;
 }
 
-.highlight {
-  color: #f4690d;
-}
-
 button {
+  margin: 30px;
   background-color: #f4690d;
   border-radius: 20px;
   width: 200px;
