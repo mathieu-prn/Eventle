@@ -1,5 +1,5 @@
 <template>
-  <div id="container">
+  <div id="gamehero">
     <h1>Learn more about history.</h1>
     <h1>Every day.</h1>
     <h1>
@@ -11,7 +11,7 @@
 </template>
 
 <style scoped>
-#container {
+#gamehero {
   display: flex;
   flex-direction: column;
   align-items: center;

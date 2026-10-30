@@ -7,3 +7,10 @@ body {
 .highlight {
   color: #f4690d;
 }
+
+#menu {
+  z-index: 99;
+  position: fixed ;
+  top: 10px;
+  left: 10px;
+}
