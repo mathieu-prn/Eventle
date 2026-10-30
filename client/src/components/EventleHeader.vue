@@ -1,8 +1,10 @@
 <template>
   <header>
     <img src="../assets/icons/menu.svg" class="icon" @click="toggleMenu" />
-    <h1>Eventle</h1>
-    <a href="/"> <img src="../assets/icons/account.svg" class="icon" /></a>
+    <router-link to="/"><h1>Eventle</h1></router-link>
+    <router-link to="/login"
+      ><img src="../assets/icons/account.svg" class="icon"
+    /></router-link>
     <div id="menu" v-if="showMenu">
       <div class="menu-el">
         <h2>Eventle</h2>

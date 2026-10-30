@@ -6,7 +6,7 @@
       <span class="highlight">Event</span> by
       <span class="highlight">event</span>.
     </h1>
-    <button>PLAY TODAY'S ! ⇨</button>
+    <router-link to="/play"><button>PLAY TODAY'S ! ⇨</button></router-link>
   </div>
 </template>
 
