@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Oct 28, 2026 at 11:07 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Hôte : 127.0.0.1
+-- Généré le : ven. 30 oct. 2026 à 07:19
+-- Version du serveur : 10.4.32-MariaDB
+-- Version de PHP : 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,15 +18,35 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `eventle`
+-- Base de données : `eventle`
 --
-CREATE DATABASE IF NOT EXISTS `eventle` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `eventle`;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `events`
+-- Structure de la table `archive`
+--
+
+CREATE TABLE `archive` (
+  `game_date` date NOT NULL,
+  `event_id` int(11) NOT NULL,
+  `comparison1` int(11) NOT NULL,
+  `comparison2` int(11) NOT NULL,
+  `comparison3` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Déchargement des données de la table `archive`
+--
+
+INSERT INTO `archive` (`game_date`, `event_id`, `comparison1`, `comparison2`, `comparison3`) VALUES
+('2026-10-29', 67, 1, 100, 167),
+('2026-10-30', 142, 87, 70, 75);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `events`
 --
 
 CREATE TABLE `events` (
@@ -42,7 +62,7 @@ CREATE TABLE `events` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
--- Dumping data for table `events`
+-- Déchargement des données de la table `events`
 --
 
 INSERT INTO `events` (`id`, `name`, `year`, `location_type`, `country`, `coordinate_lat`, `coordinate_lng`, `alternative_name`, `description`) VALUES
@@ -299,24 +319,47 @@ INSERT INTO `events` (`id`, `name`, `year`, `location_type`, `country`, `coordin
 (250, 'Expo 2025 opens in Osaka', 2025, 'coordinates', 'Japan', 35.6762, 139.65, 'A world exposition opens on an artificial island', 'Osaka hosts a world exposition focused on future society, technology and international exchange.');
 
 --
--- Indexes for dumped tables
+-- Index pour les tables déchargées
 --
 
 --
--- Indexes for table `events`
+-- Index pour la table `archive`
+--
+ALTER TABLE `archive`
+  ADD PRIMARY KEY (`game_date`),
+  ADD KEY `fk_archive_event` (`event_id`),
+  ADD KEY `fk_archive_comparison1` (`comparison1`),
+  ADD KEY `fk_archive_comparison2` (`comparison2`),
+  ADD KEY `fk_archive_comparison3` (`comparison3`);
+
+--
+-- Index pour la table `events`
 --
 ALTER TABLE `events`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT pour les tables déchargées
 --
 
 --
--- AUTO_INCREMENT for table `events`
+-- AUTO_INCREMENT pour la table `events`
 --
 ALTER TABLE `events`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=251;
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table `archive`
+--
+ALTER TABLE `archive`
+  ADD CONSTRAINT `fk_archive_comparison1` FOREIGN KEY (`comparison1`) REFERENCES `events` (`id`),
+  ADD CONSTRAINT `fk_archive_comparison2` FOREIGN KEY (`comparison2`) REFERENCES `events` (`id`),
+  ADD CONSTRAINT `fk_archive_comparison3` FOREIGN KEY (`comparison3`) REFERENCES `events` (`id`),
+  ADD CONSTRAINT `fk_archive_event` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
