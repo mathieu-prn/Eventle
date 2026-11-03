@@ -7,17 +7,21 @@ import HomeView from './views/HomeView.vue'
 import PlayView from './views/PlayView.vue'
 import LoginView from './views/LoginView'
 
+const app = createApp(App);
+
 const routes = [
     {path: "/", component: HomeView},
     {path: "/play", component: PlayView},
     {path: "/login", component: LoginView}
 ]
 
+//Global Variables
+app.config.globalProperties.$gameId = 0;
+
 export const router  = createRouter({
   history: createWebHistory(),
   routes,
 })
 
-createApp(App).use(router).mount('#app')
-
-
+app.use(router)
+app.mount('#app')
