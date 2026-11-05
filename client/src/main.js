@@ -15,9 +15,6 @@ const routes = [
     {path: "/login", component: LoginView}
 ]
 
-//Global Variables
-app.config.globalProperties.$gameId = 0;
-
 export const router  = createRouter({
   history: createWebHistory(),
   routes,
