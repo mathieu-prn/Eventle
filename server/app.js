@@ -2,7 +2,10 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+const cors = require("cors");
 const mysql = require("mysql2");
+
+app.use(cors());
 
 const db = mysql.createConnection({
     host: "localhost",
@@ -28,10 +31,11 @@ app.get("/event", (req, res) => {
 })
 
 app.get("/play", (req, res) => {
-    db.query("SELECT MAX(game_date) = UTC_DATE() AS is_today FROM archive", (err, ans) => {
+    db.query("SELECT * FROM archive WHERE game_date = UTC_DATE();", (err, ans) => {
         if (err) throw err;
-        if (ans[0].is_today === 1) {
-            res.send("Game already started today !");
+        if (ans.length > 0) {
+            res.json(ans[0]);
+            console.log("Game already started today !");
         } else {
             event_id = Math.floor(Math.random() * 249 + 1);
             comparison1 = Math.floor(Math.random() * 249 + 1);
@@ -48,11 +52,14 @@ app.get("/play", (req, res) => {
             }
             db.query(`INSERT INTO archive (game_date, event_id, comparison1, comparison2, comparison3) VALUES (UTC_DATE(), ${event_id}, ${comparison1}, ${comparison2}, ${comparison3})`, (err, ans) => {
                 if (err) throw err;
-                res.send("New game started !");
+                const insertedRow = {"event_id":event_id,"comparison1":comparison1,"comparison2":comparison2,"comparison3":comparison3};
+                res.json(insertedRow);
+                console.log("New game started !");
             });
         }
     });
-});   
+});
+
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
