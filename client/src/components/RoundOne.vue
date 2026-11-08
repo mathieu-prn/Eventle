@@ -1,29 +1,37 @@
 <template>
-  <div id="round1">
-    <h2>When did the following event happen:</h2>
-    <h2>
-      <span class="highlight">{{ eventClue }} </span> ?
-    </h2>
-    <input
-      id="year-input"
-      type="number"
-      placeholder="Guess a year..."
-      size="5"
-      v-model="inputYear"
-      min="-3000"
-      max="2026"
-    />
-    <input
-      type="range"
-      min="-3000"
-      max="2026"
-      id="year-slider"
-      v-model="inputYear"
-    />
+  <div id="container">
+    <div id="round1">
+      <h2>When did the following event happen:</h2>
+      <h2>
+        <span class="highlight">{{ eventClue }} </span> ?
+      </h2>
+      <input
+        id="year-input"
+        type="number"
+        placeholder="Guess a year..."
+        size="5"
+        v-model="inputYear"
+        min="-3000"
+        max="2026"
+      />
+      <input
+        type="range"
+        min="-3000"
+        max="2026"
+        id="year-slider"
+        v-model="inputYear"
+      />
+    </div>
   </div>
 </template>
 
 <style scoped>
+
+#container {
+  display:flex;
+  justify-content:center;
+}
+
 #round1 {
   width: 50vw;
   height: 70vh;

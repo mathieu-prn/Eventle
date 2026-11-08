@@ -5,7 +5,7 @@ import App from './App.vue'
 import "./main.css"
 import HomeView from './views/HomeView.vue'
 import PlayView from './views/PlayView.vue'
-import LoginView from './views/LoginView.vue'
+import LoginView from './views/AuthView.vue'
 
 const app = createApp(App);
 

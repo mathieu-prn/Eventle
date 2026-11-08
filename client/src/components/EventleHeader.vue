@@ -50,9 +50,12 @@ header {
 
 a {
   text-decoration: none;
+  color:#1f3579;
+  font-size: 20px;
 }
 
 a:hover {
+
   color: #f4690d;
 }
 

@@ -3,16 +3,9 @@ const app = express();
 const port = 3000;
 
 const cors = require("cors");
-const mysql = require("mysql2");
+const db = require("./db");
 
 app.use(cors());
-
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "express",
-    password: "abc123",
-    database: "eventle"  
-});
 
 db.connect((err) => {
     if (err) throw err;
@@ -39,15 +32,15 @@ app.get("/play", (req, res) => {
             console.log("Game already started today !");
         } else {
             eventId = Math.floor(Math.random() * 249 + 1);
-            comparison1 = Math.floor(Math.random() * 249 + 1);
+            let comparison1 = Math.floor(Math.random() * 249 + 1);
             while (comparison1 === eventId) {
                 comparison1 = Math.floor(Math.random() * 249 + 1);
             }
-            comparison2 = Math.floor(Math.random() * 249 + 1);
+            let comparison2 = Math.floor(Math.random() * 249 + 1);
             while (comparison2 === eventId || comparison2 === comparison1) {
                 comparison2 = Math.floor(Math.random() * 249 + 1);
             }
-            comparison3 = Math.floor(Math.random() * 249 + 1);
+            let comparison3 = Math.floor(Math.random() * 249 + 1);
             while (comparison3 === eventId || comparison3 === comparison1 || comparison3 === comparison2) {
                 comparison3 = Math.floor(Math.random() * 249 + 1);
             }
