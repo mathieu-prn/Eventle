@@ -6,6 +6,7 @@ const cors = require("cors");
 const db = require("./db");
 
 app.use(cors());
+app.use(express.json());
 
 db.connect((err) => {
     if (err) throw err;
@@ -58,6 +59,9 @@ app.get("/play", (req, res) => {
         })
     });
 });
+
+app.post("/register", require("./register"));
+app.post("/login", require("./login"));
 
 
 app.listen(port, () => {

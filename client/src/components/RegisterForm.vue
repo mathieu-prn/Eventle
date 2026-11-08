@@ -31,10 +31,11 @@
                 }
                 else {
                     try {
-                        const response = await axios.post('/register', {
+                        const response = await axios.post('http://localhost:3000/register', {
                             username: this.username,
                             email: this.email,
-                            password: this.password
+                            password: this.password,
+                            confirmPassword: this.confirmPassword
                         });
                         if (response.data.success) {
                             alert('Registration successful!');
