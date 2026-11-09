@@ -1,5 +1,5 @@
 <template>
-    <div id="login">
+    <div v-if="!user" id="login">
         <h2>Login</h2>
         <form @submit.prevent="login" class="form auth-fields">
         <input type="text" v-model="username" placeholder="Username" required />
@@ -14,25 +14,26 @@
     export default {
         data() {
             return {
-                username: '',
-                password: ''
+                user: null
             };
         },
         methods: {
             async login() {
                 try {
-                    const response = await axios.post('/login', {
+                    const response = await axios.post('http://localhost:3000/login', {
                         username: this.username,
                         password: this.password
                     });
                     if (response.data.success) {
-                        alert('Login successful!');
+                        alert(response.data.message);
+                        this.user = response.data.user;
+                        localStorage.setItem('accessToken', response.data.token);
                     } else {
-                        alert('Login failed. Please check your credentials.');
+                        alert(response.data.message);
                     }
                 } catch (error) {
                     console.error('Error during login:', error);
-                    alert('An error occurred during login. Please try again later.');
+                    alert(error.response.data.message || 'An error occurred during login. Please try again later.');
                 }
             }
         }
