@@ -54,6 +54,25 @@
   background-color: white;
   border-radius: 20px;
 }
+
+#year-slider::-webkit-slider-thumb,
+#year-slider::-moz-range-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 20px;
+  background: #f4690d;
+  border: none;
+  cursor: pointer;
+  transition: 0.1s;
+}
+
+#year-slider::-webkit-slider-thumb:hover,
+#year-slider::-moz-range-thumb:hover {
+  width: 30px;
+  height: 30px;
+}
 </style>
 
 <script>
