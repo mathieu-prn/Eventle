@@ -1,49 +1,48 @@
 <template>
-  <div id="container">
-    <div id="round1">
-      <h2>When did the following event happen:</h2>
-      <h2>
-        <span class="highlight">{{ eventClue }} </span> ?
-      </h2>
-      <input
-        id="year-input"
-        type="number"
-        placeholder="Guess a year..."
-        size="5"
-        v-model="inputYear"
-        min="-3000"
-        max="2026"
-      />
-      <input
-        type="range"
-        min="-3000"
-        max="2026"
-        id="year-slider"
-        v-model="inputYear"
-      />
-    </div>
+  <div v-if="!lockedGuess" id="round1">
+    <h2>When did the following event happen:</h2>
+    <h2>
+      <span class="highlight">{{ eventClue }} </span> ?
+    </h2>
+    <input
+      id="year-input"
+      type="number"
+      placeholder="Guess a year..."
+      size="5"
+      v-model="inputYear"
+      min="-3000"
+      max="2026"
+    />
+    <input
+      type="range"
+      min="-3000"
+      max="2026"
+      id="year-slider"
+      v-model="inputYear"
+    />
+  </div>
+  <div v-else id="round1-results">
+    <h2>Good job !</h2>
+    <input
+      id="year-input"
+      type="number"
+      placeholder="Guess a year..."
+      size="5"
+      v-model="inputYear"
+      min="-3000"
+      max="2026"
+    />
+    <input
+      type="range"
+      min="-3000"
+      max="2026"
+      id="year-slider"
+      v-model="inputYear"
+    />
   </div>
 </template>
 
 <style scoped>
-
-#container {
-  display:flex;
-  justify-content:center;
-}
-
-#round1 {
-  width: 50vw;
-  height: 70vh;
-  background-color: #1f3579;
-  color: white;
-  border-radius: 50px;
-  padding: 10px 30px;
-  margin: 30px;
-  text-align: center;
-  box-shadow: 20px 20px #f4690d;
-}
-
 #year-input {
   font-size: 50px;
   text-align: center;
@@ -67,6 +66,10 @@ export default {
   props: {
     eventClue: {
       type: String,
+      required: true,
+    },
+    lockedGuess: {
+      type: Boolean,
       required: true,
     },
   },
