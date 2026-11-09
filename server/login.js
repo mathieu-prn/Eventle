@@ -36,7 +36,8 @@ const login = (req, res) => {
                         id: results[0].id,
                         username: results[0].username,
                         isAdmin
-                    } 
+                    },
+                    message: 'Login successful.' 
                 });
             })
             .catch(err => {

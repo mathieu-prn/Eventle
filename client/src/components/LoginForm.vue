@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!user" id="login">
+    <div id="login">
         <h2>Login</h2>
         <form @submit.prevent="login" class="form auth-fields">
         <input type="text" v-model="username" placeholder="Username" required />
@@ -14,7 +14,8 @@
     export default {
         data() {
             return {
-                user: null
+                username: '',
+                password: ''
             };
         },
         methods: {
@@ -26,8 +27,10 @@
                     });
                     if (response.data.success) {
                         alert(response.data.message);
-                        this.user = response.data.user;
-                        localStorage.setItem('accessToken', response.data.token);
+                        this.$emit('logged-in', {
+                            user: response.data.user,
+                            token: response.data.token
+                        });
                     } else {
                         alert(response.data.message);
                     }

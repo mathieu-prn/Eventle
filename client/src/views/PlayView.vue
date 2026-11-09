@@ -59,7 +59,7 @@ import RoundThree from "../components/RoundThree";
   </div>
 </template>
 
-<style>
+<style scoped>
 #container {
   display: flex;
   justify-content: center;
