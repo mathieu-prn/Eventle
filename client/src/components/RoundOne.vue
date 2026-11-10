@@ -9,36 +9,29 @@
       type="number"
       placeholder="Guess a year..."
       size="5"
-      v-model="inputYear"
-      min="-3000"
+      v-model="localYear"
+      min="-10000"
       max="2026"
     />
     <input
       type="range"
-      min="-3000"
+      min="-10000"
       max="2026"
       id="year-slider"
-      v-model="inputYear"
+      v-model="localYear"
     />
   </div>
   <div v-else id="round1-results">
-    <h2>Good job !</h2>
-    <input
-      id="year-input"
-      type="number"
-      placeholder="Guess a year..."
-      size="5"
-      v-model="inputYear"
-      min="-3000"
-      max="2026"
-    />
+    <h2>You gained {{ correct.points }} points !</h2>
     <input
       type="range"
-      min="-3000"
+      min="-10000"
       max="2026"
       id="year-slider"
-      v-model="inputYear"
+      :value="correct.correctAns"
+      disabled
     />
+    <p>The exact year was {{ correct.correctAns }}.</p>
   </div>
 </template>
 
@@ -77,11 +70,6 @@
 
 <script>
 export default {
-  data() {
-    return {
-      inputYear: 1000,
-    };
-  },
   props: {
     eventClue: {
       type: String,
@@ -90,6 +78,25 @@ export default {
     lockedGuess: {
       type: Boolean,
       required: true,
+    },
+    yearGuess: {
+      type: Number,
+      required: true,
+    },
+    correct: {
+      type: Object,
+      required: true,
+    },
+  },
+  emits: ["update:yearGuess"],
+  computed: {
+    localYear: {
+      get() {
+        return this.yearGuess;
+      },
+      set(value) {
+        this.$emit("update:yearGuess", Number(value));
+      },
     },
   },
 };

@@ -29,6 +29,7 @@ app.get("/play", require("./game_generation"));
 app.post("/register", require("./register"));
 app.post("/login", require("./login"));
 
+app.post("/round1", require("./round1"));
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

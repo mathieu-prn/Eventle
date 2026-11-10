@@ -30,6 +30,8 @@ import RoundThree from "../components/RoundThree";
         v-if="actualRound == 1"
         :eventClue="eventClue"
         :lockedGuess="lockedGuess"
+        :correct="correct1"
+        v-model:yearGuess="guess1"
       ></RoundOne>
       <RoundTwo
         v-if="actualRound == 2"
@@ -41,18 +43,8 @@ import RoundThree from "../components/RoundThree";
         :eventClue="eventClue"
         :lockedGuess="lockedGuess"
       ></RoundThree>
-      <button v-if="!lockedGuess" @click="() => (lockedGuess = !lockedGuess)">
-        GUESS !
-      </button>
-      <button
-        v-if="lockedGuess"
-        @click="
-          () => {
-            actualRound++;
-            lockedGuess = !lockedGuess;
-          }
-        "
-      >
+      <button v-if="!lockedGuess" @click="checkAnswer">GUESS !</button>
+      <button v-if="lockedGuess" @click="() => (lockedGuess = !lockedGuess)">
         NEXT ROUND ⇨
       </button>
     </div>
@@ -117,7 +109,30 @@ export default {
       comparedId: [],
       actualRound: 1,
       lockedGuess: false,
+      guess1: 0,
+      correct1: {},
     };
+  },
+  methods: {
+    async checkAnswer() {
+      try {
+        const response = await axios.post("http://localhost:3000/round1", {
+          eventId: this.eventId,
+          yearGuess: this.guess1,
+          userId: 0,
+        });
+        if (response.data) {
+          this.correct1 = response.data;
+          this.lockedGuess = !this.lockedGuess;
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert(
+          error.response.data.message ||
+            "An error occurred. Please try again later."
+        );
+      }
+    },
   },
   async mounted() {
     const setupRes = await axios.get("http://localhost:3000/play");
