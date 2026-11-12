@@ -44,7 +44,15 @@ import RoundThree from "../components/RoundThree";
         :lockedGuess="lockedGuess"
       ></RoundThree>
       <button v-if="!lockedGuess" @click="checkAnswer">GUESS !</button>
-      <button v-if="lockedGuess" @click="() => (lockedGuess = !lockedGuess)">
+      <button
+        v-if="lockedGuess"
+        @click="
+          () => {
+            lockedGuess = !lockedGuess;
+            actualRound++;
+          }
+        "
+      >
         NEXT ROUND ⇨
       </button>
     </div>
