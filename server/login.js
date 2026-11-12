@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('./db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { secretKey } = require('./auth');
 
 const login = (req, res) => {
     const { username, password } = req.body;
@@ -25,7 +26,7 @@ const login = (req, res) => {
                 const isAdmin = Boolean(results[0].isadmin);
                 const token = jwt.sign(
                     { sub: String(results[0].id), isAdmin }, 
-                    "3c318be00c45457c8a9fba06d8170e03dc88f3c3790578d2f885298d048ecb31",
+                    secretKey,
                     { expiresIn: '1h', algorithm: 'HS256' }
                 );
 

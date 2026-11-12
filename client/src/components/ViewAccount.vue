@@ -1,5 +1,6 @@
 <template>
   <h1>Welcome back <span id="username">{{ user.username }}</span> !</h1>
+  <button @click="handleLogout">Logout</button>
 </template>
 
 <script>
@@ -8,6 +9,11 @@
             user: {
                 type: Object,
                 required: true
+            }
+        },
+        methods: {
+            handleLogout() {
+                this.$emit('logged-out');
             }
         }
     };
