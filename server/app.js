@@ -31,6 +31,7 @@ app.post("/login", require("./login"));
 app.post("/auth", require("./auth").authenticate);
 
 app.post("/round1", require("./round1"));
+app.post("/round2", require("./round2"));
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
