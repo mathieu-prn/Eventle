@@ -53,7 +53,7 @@ const round2 = (req, res) => {
 
         res.status(200).json({
             points: points,
-            distance: distance,
+            distance: Math.round(distance),
             gradingType: solution.location_type,
             correctLat: solution.coordinate_lat,
             correctLng: solution.coordinate_lng,

@@ -22,7 +22,9 @@
     />
   </div>
   <div v-else id="round1-results">
-    <h2>You gained {{ correct.points }} points !</h2>
+    <h2>
+      You gained <span class="highlight">{{ correct.points }} </span> points !
+    </h2>
     <input
       type="range"
       min="-10000"

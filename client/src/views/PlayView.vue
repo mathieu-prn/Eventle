@@ -37,6 +37,8 @@ import RoundThree from "../components/RoundThree";
         v-if="actualRound == 2"
         :eventClue="eventClue"
         :lockedGuess="lockedGuess"
+        :correct="correct2"
+        v-model:coordGuess="guess2"
       ></RoundTwo>
       <RoundThree
         v-if="actualRound == 3"
@@ -118,27 +120,57 @@ export default {
       actualRound: 1,
       lockedGuess: false,
       guess1: 0,
+      guess2: [0, 0],
       correct1: {},
+      correct2: {},
     };
   },
   methods: {
     async checkAnswer() {
-      try {
-        const response = await axios.post("http://localhost:3000/round1", {
-          eventId: this.eventId,
-          yearGuess: this.guess1,
-          userId: 0,
-        });
-        if (response.data) {
-          this.correct1 = response.data;
-          this.lockedGuess = !this.lockedGuess;
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        alert(
-          error.response.data.message ||
-            "An error occurred. Please try again later."
-        );
+      switch (this.actualRound) {
+        case 1:
+          try {
+            const response = await axios.post("http://localhost:3000/round1", {
+              eventId: this.eventId,
+              yearGuess: this.guess1,
+              userId: 0,
+            });
+            if (response.data) {
+              this.correct1 = response.data;
+              this.lockedGuess = !this.lockedGuess;
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert(
+              error.response.data.message ||
+                "An error occurred. Please try again later."
+            );
+          }
+
+          break;
+
+        case 2:
+          try {
+            const response = await axios.post("http://localhost:3000/round2", {
+              eventId: this.eventId,
+              guessLat: this.guess2[0],
+              guessLng: this.guess2[1],
+              userId: 0,
+            });
+            if (response.data) {
+              this.correct2 = response.data;
+              this.lockedGuess = !this.lockedGuess;
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert(
+              error.response.data.message ||
+                "An error occurred. Please try again later."
+            );
+          }
+          break;
+        default:
+          break;
       }
     },
   },
