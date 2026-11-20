@@ -33,19 +33,19 @@
     <div class="result-slider">
       <input
         type="range"
-        min="-10000"
-        max="2026"
+        min="0"
+        max="100"
         class="year-slider result-slider-handle guess-handle"
-        :value="localYear"
+        :value="sliderPosition"
         aria-label="Your guess"
         disabled
       />
       <input
         type="range"
-        min="-10000"
-        max="2026"
+        min="0"
+        max="100"
         class="year-slider result-slider-handle answer-handle"
-        :value="correct.correctAns"
+        :value="correctPosition()"
         aria-label="Correct answer"
         disabled
       />
@@ -208,13 +208,20 @@ export default {
     },
     async yearToPos() {
       await this.sleep(0.1);
-      console.log(this.localYear);
       let remapped;
       if (this.localYear <= 0)
         remapped = ((this.localYear + 10000) * 50) / 10000;
       else remapped = (this.localYear * 49) / 2026 + 51;
 
       this.sliderPosition = Math.round(remapped);
+    },
+    correctPosition() {
+      let remapped;
+      if (this.correct.correctAns <= 0)
+        remapped = ((this.correct.correctAns + 10000) * 50) / 10000;
+      else remapped = (this.correct.correctAns * 49) / 2026 + 51;
+
+      return Math.round(remapped);
     },
   },
   emits: ["update:yearGuess"],
