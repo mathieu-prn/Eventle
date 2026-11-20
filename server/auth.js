@@ -42,4 +42,4 @@ const authenticate = (req, res) => {
     );
 };
 
-module.exports = { authenticate, secretKey };
+module.exports = { authenticate, secretKey, verifyToken };

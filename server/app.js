@@ -29,6 +29,7 @@ app.get("/play", require("./game_generation"));
 app.post("/register", require("./register"));
 app.post("/login", require("./login"));
 app.post("/auth", require("./auth").authenticate);
+app.post("/updatedetails", require("./updatedetails"));
 
 app.post("/round1", require("./round1"));
 app.post("/round2", require("./round2"));

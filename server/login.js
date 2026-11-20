@@ -36,6 +36,7 @@ const login = (req, res) => {
                     user: {
                         id: results[0].id,
                         username: results[0].username,
+                        email: results[0].email,
                         isAdmin
                     },
                     message: 'Login successful.' 
