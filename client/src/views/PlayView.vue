@@ -12,18 +12,21 @@ import RoundThree from "../components/RoundThree";
         alt=""
         class="round-icon"
         :class="{ activeicon: actualRound == 1 }"
+        @click="reviewRound(1)"
       />
       <img
         src="../assets/icons/location.svg"
         alt=""
         class="round-icon"
         :class="{ activeicon: actualRound == 2 }"
+        @click="reviewRound(2)"
       />
       <img
         src="../assets/icons/order.svg"
         alt=""
         class="round-icon"
         :class="{ activeicon: actualRound == 3 }"
+        @click="reviewRound(3)"
       />
       <p>Round {{ actualRound }} of 3</p>
       <RoundOne
@@ -103,6 +106,11 @@ button:hover {
   margin: 5px;
 }
 
+.round-icon:hover {
+  cursor: pointer;
+  background-color: #f4690d;
+}
+
 .activeicon {
   background-color: #f4690d;
 }
@@ -118,11 +126,14 @@ export default {
       eventClue: "",
       comparedId: [],
       actualRound: 1,
+      maxRound: 1,
       lockedGuess: false,
       guess1: 0,
       guess2: [0, 0],
+      guess3: "",
       correct1: {},
       correct2: {},
+      correct3: {},
     };
   },
   methods: {
@@ -171,6 +182,23 @@ export default {
           break;
         default:
           break;
+      }
+    },
+    reviewRound(round) {
+      const maxRound = this.lockedGuess
+        ? this.actualRound + 1
+        : this.actualRound;
+
+      if (maxRound > this.maxRound) this.maxRound = maxRound;
+
+      console.log(this.maxRound);
+
+      if (round < this.maxRound) {
+        this.actualRound = round;
+        this.lockedGuess = true;
+      } else if (round == this.maxRound) {
+        this.actualRound = this.maxRound;
+        this.lockedGuess = false;
       }
     },
   },

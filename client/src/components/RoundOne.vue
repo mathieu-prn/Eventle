@@ -13,14 +13,16 @@
         v-model="localYear"
         min="-10000"
         max="2026"
+        @input="yearToPos"
       />
       <input
         type="range"
-        min="-10000"
-        max="2026"
+        min="0"
+        max="100"
         class="year-slider"
         id="year-slider-active"
-        v-model="localYear"
+        v-model="sliderPosition"
+        @input="posToYear"
       />
     </div>
   </div>
@@ -186,6 +188,33 @@ export default {
     correct: {
       type: Object,
       required: true,
+    },
+  },
+  data() {
+    return {
+      sliderPosition: 50,
+    };
+  },
+  methods: {
+    sleep(time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    },
+    posToYear() {
+      let remapped;
+      if (this.sliderPosition <= 50)
+        remapped = (10000 * this.sliderPosition) / 50 - 10000;
+      else remapped = ((this.sliderPosition - 51) * 2026) / 49;
+      this.localYear = Math.round(remapped);
+    },
+    async yearToPos() {
+      await this.sleep(0.1);
+      console.log(this.localYear);
+      let remapped;
+      if (this.localYear <= 0)
+        remapped = ((this.localYear + 10000) * 50) / 10000;
+      else remapped = (this.localYear * 49) / 2026 + 51;
+
+      this.sliderPosition = Math.round(remapped);
     },
   },
   emits: ["update:yearGuess"],
