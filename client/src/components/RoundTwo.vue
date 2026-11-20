@@ -1,5 +1,5 @@
 <script setup>
-import userIcon from "@/assets/icons/account.svg";
+import userIcon from "@/assets/icons/user.svg";
 import flagIcon from "@/assets/icons/flag.svg";
 </script>
 
@@ -44,13 +44,18 @@ import flagIcon from "@/assets/icons/flag.svg";
           attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
         ></l-tile-layer>
         <l-marker :lat-lng="[correct.correctLat, correct.correctLng]">
-          <l-icon :icon-url="flagIcon" :icon-size="[50, 50]" />
+          <l-icon
+            :icon-url="flagIcon"
+            :icon-size="[50, 50]"
+            :iconAnchor="[10, 41]"
+          />
         </l-marker>
         <l-marker :lat-lng="localCoord">
-          <l-icon :icon-url="userIcon" :icon-size="[21, 21]" />
+          <l-icon :icon-url="userIcon" :icon-size="[40, 40]" />
         </l-marker>
         <l-polyline
           :lat-lngs="[[correct.correctLat, correct.correctLng], localCoord]"
+          color="black"
         />
       </l-map>
     </div>
