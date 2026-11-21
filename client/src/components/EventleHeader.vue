@@ -11,7 +11,7 @@
         <img src="../assets/icons/close.svg" class="icon" @click="toggleMenu" />
       </div>
       <a class="menu-el" href="#howtoplay">How to play ?</a>
-      <a class="menu-el" href="/">Archive</a>
+      <a class="menu-el" href="/archive">Archive</a>
       <a class="menu-el" href="/">Leaderboard</a>
       <button>PLAY TODAY'S ! ⇨</button>
     </div>
@@ -21,8 +21,8 @@
 <!-- style below will only apply to the current component-->
 <style scoped>
 .icon {
-  width: 50px;
-  height: 50px;
+  width: clamp(38px, 5vw, 50px);
+  height: clamp(38px, 5vw, 50px);
 }
 
 header {
@@ -30,21 +30,24 @@ header {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin: 20px 50px 0 50px;
+  margin: 20px clamp(16px, 5vw, 50px) 0;
 }
 
 #menu {
-  width: 30vw;
-  height: 70vh;
+  width: clamp(280px, 20vw, 320px);
+  height: auto;
+  min-height: 220px;
   border-radius: 20px;
   background-color: #1f3579;
   padding: 20px;
+  box-sizing: border-box;
 }
 
 .menu-el {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   color: white;
 }
 
@@ -55,16 +58,15 @@ a {
 }
 
 a:hover {
-
   color: #f4690d;
 }
 
 button {
-  margin: 30px;
+  margin: 20px 5%;
   background-color: #f4690d;
   border-radius: 20px;
-  width: 200px;
-  height: 75px;
+  width: 90%;
+  min-height: 48px;
   font-size: 20px;
   border: solid white;
   box-shadow: 7px 7px #1f3579;
@@ -74,6 +76,34 @@ button {
 button:hover {
   cursor: pointer;
   box-shadow: 10px 10px #1f3579;
+}
+
+@media (max-width: 520px) {
+  header {
+    margin: 12px 16px 0;
+  }
+
+  .icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  #menu {
+    width: calc(100vw - 20px);
+    max-width: 320px;
+    min-height: 0;
+    padding: 16px;
+  }
+
+  .menu-el,
+  a,
+  button {
+    font-size: 18px;
+  }
+
+  button {
+    min-height: 52px;
+  }
 }
 </style>
 

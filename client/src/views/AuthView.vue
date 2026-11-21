@@ -36,7 +36,9 @@ export default {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/auth', { token });
+      const response = await axios.get('http://localhost:3000/auth', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       this.user = response.data.user;
       this.authStatus = 'authenticated';
       localStorage.setItem('user', JSON.stringify(this.user));

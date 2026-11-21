@@ -28,8 +28,11 @@ app.get("/play", require("./game_generation"));
 
 app.post("/register", require("./register"));
 app.post("/login", require("./login"));
-app.post("/auth", require("./auth").authenticate);
-app.post("/updatedetails", require("./updatedetails"));
+const auth = require("./auth");
+
+app.get("/auth", auth.requireAuth, auth.authenticate);
+app.post("/updatedetails", auth.requireAuth, require("./updatedetails"));
+app.get("/archive", auth.requireAuth, require("./archive"));
 
 app.post("/round1", require("./round1"));
 app.post("/round2", require("./round2"));

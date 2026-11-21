@@ -6,13 +6,15 @@ import "./main.css"
 import HomeView from './views/HomeView.vue'
 import PlayView from './views/PlayView.vue'
 import LoginView from './views/AuthView.vue'
+import ArchiveView from './views/ArchiveView.vue'
 
 const app = createApp(App);
 
 const routes = [
     {path: "/", component: HomeView},
     {path: "/play", component: PlayView},
-    {path: "/login", component: LoginView}
+    {path: "/login", component: LoginView},
+    {path: "/archive", component: ArchiveView}
 ]
 
 export const router  = createRouter({

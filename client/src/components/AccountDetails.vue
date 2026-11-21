@@ -65,9 +65,7 @@ import axios from 'axios';
     methods :{
         async saveChanges() {
             try {
-            const payload = {
-                token: localStorage.getItem('accessToken')
-            };
+            const payload = {};
 
             if (this.newUsername) payload.new_username = this.newUsername;
             if (this.newEmail) payload.new_email = this.newEmail;
@@ -76,7 +74,15 @@ import axios from 'axios';
                 payload.old_password = this.oldPassword;
             }
 
-            const response = await axios.post('http://localhost:3000/updatedetails', payload);
+            const response = await axios.post(
+                'http://localhost:3000/updatedetails',
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                }
+            );
             if (response.data.success) {
                 alert('Modification successful!');
                 this.$emit('updateUser', response.data.user);

@@ -11,16 +11,33 @@ function verifyToken(token) {
     }
 }
 
-const authenticate = (req, res) => {
-    const decoded = verifyToken(req.body.token);
+const requireAuth = (req, res, next) => {
+    const authorization = req.get('authorization');
+
+    if (!authorization) {
+        return res.status(401).json({ message: 'Authorization header required.' });
+    }
+
+    const [scheme, token] = authorization.split(' ');
+
+    if (scheme !== 'Bearer' || !token) {
+        return res.status(401).json({ message: 'Invalid authorization header.' });
+    }
+
+    const decoded = verifyToken(token);
 
     if (!decoded || !decoded.sub) {
         return res.status(401).json({ message: 'Invalid or expired token.' });
     }
 
+    req.userId = decoded.sub;
+    next();
+};
+
+const authenticate = (req, res) => {
     db.query(
         'SELECT id, username, isadmin FROM users WHERE id = ?',
-        [decoded.sub],
+        [req.userId],
         (err, results) => {
             if (err) {
                 console.error(err);
@@ -42,4 +59,4 @@ const authenticate = (req, res) => {
     );
 };
 
-module.exports = { authenticate, secretKey, verifyToken };
+module.exports = { authenticate, requireAuth, secretKey, verifyToken };

@@ -1,21 +1,9 @@
 const bcrypt = require('bcrypt');
 const db = require('./db');
-const auth = require('./auth');
 
 const updateDetails = (req,res) => {
-    const {new_username,new_email,new_password,old_password,token} = req.body;
-
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    const decoded = auth.verifyToken(token);
-
-    if (!decoded || !decoded.sub) {
-        return res.status(401).json({ message: 'Invalid or expired token.' });
-    }
-
-    const userId = decoded.sub;
+    const {new_username,new_email,new_password,old_password} = req.body;
+    const userId = req.userId;
 
     const updates = [
         new_username !== undefined && ['username', new_username],
@@ -78,18 +66,35 @@ const updateDatabase = (field, value, userId,res) => {
         return res.status(400).json({ message: 'Invalid field to update.' });
     }
 
-    const sql = `UPDATE users SET ${allowedFields[field]} = ? WHERE id = ?`;
+    if (allowedFields[field] === 'username' || allowedFields[field] === 'email') {
+        db.query(`SELECT id FROM users WHERE ${allowedFields[field]} = ? AND id <> ?`, [value, userId], (err, results) => {
+            if (err) {
+                return res.status(500).json({ message: 'Database error.' });
+            }
+            if (results.length > 0) {
+                return res.status(400).json({ message: `${field} is already in use.` });
+            }
 
-    db.query(sql, [value,userId], (err) => {
-        if (err) {
-            console.error(err);
-            return res.status(400).json({ message: 'Error updating user details.' });
-        }
-        return res.json({
-            success: true,
-            message: `${field} updated successfully.`
+            updateUser();
+        });
+    } else {
+        updateUser();
+    }
+
+    function updateUser() {
+        const sql = `UPDATE users SET ${allowedFields[field]} = ? WHERE id = ?`;
+
+        db.query(sql, [value,userId], (err) => {
+            if (err) {
+                console.error(err);
+                return res.status(400).json({ message: 'Error updating user details.' });
+            }
+            return res.json({
+                success: true,
+                message: `${field} updated successfully.`
+            });
         })
-    });
+    }
 };
 
 module.exports = updateDetails;
