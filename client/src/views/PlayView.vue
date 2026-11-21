@@ -47,6 +47,7 @@ import RoundThree from "../components/RoundThree";
         v-if="actualRound == 3"
         :eventClue="eventClue"
         :lockedGuess="lockedGuess"
+        v-model:orderGuess="guess3"
       ></RoundThree>
       <button v-if="!lockedGuess" @click="checkAnswer">GUESS !</button>
       <button
@@ -124,13 +125,12 @@ export default {
     return {
       eventId: 0,
       eventClue: "",
-      comparedId: [],
       actualRound: 1,
       maxRound: 1,
       lockedGuess: false,
       guess1: 0,
       guess2: [0, 0],
-      guess3: "",
+      guess3: [],
       correct1: {},
       correct2: {},
       correct3: {},
@@ -211,12 +211,22 @@ export default {
       });
       this.eventId = setupRes.data.event_id;
       this.eventClue = setupRes.data.event_clue;
+      this.guess3 = [
+      { id: 1, name: "Event 1" },
+      { id: 2, name: "Event 2" },
+      { id: 3, name: "Event 3" },
+      ];
 
     }
     else {
       const setupRes = await axios.get("http://localhost:3000/play");
       this.eventId = setupRes.data.event_id;
       this.eventClue = setupRes.data.event_clue;
+      this.guess3 = [
+      { id: 1, name: "Event 1" },
+      { id: 2, name: "Event 2" },
+      { id: 3, name: "Event 3" },
+      ];
     }
   },
 };
