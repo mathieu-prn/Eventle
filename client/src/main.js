@@ -13,6 +13,7 @@ const app = createApp(App);
 const routes = [
     {path: "/", component: HomeView},
     {path: "/play", component: PlayView},
+    {path: "/playarchive", component: PlayView},
     {path: "/login", component: LoginView},
     {path: "/archive", component: ArchiveView}
 ]

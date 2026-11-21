@@ -3,8 +3,21 @@
 	<p v-if="authStatus === 'anonymous'">Please log in to view past events.</p>
 	<div v-if="authStatus === 'authenticated'" id="archive-container">
 		<div v-for="date in dates" :key="date" class="archive-event">
-			<button v-if="completedEvents.includes(date)" class="completed_event"><strong>Date:</strong> {{ date }}</button>
-            <button v-else class="incomplete_event"><strong>Date:</strong> {{ date }}</button>
+			<p>
+				<strong>{{ date }}</strong>
+			</p>
+			<p><strong>Score:</strong>{{ getScore(date) }}</p>
+			<router-link
+				v-if="date in completedEvents"
+				:to="{ path: '/playarchive', query: { date } }"
+				><button class="completed_event">Complete ✓</button></router-link
+			>
+			<router-link
+				v-else
+				:to="{ path: '/playarchive', query: { date } }"
+				class="incomplete_event"
+				><button>Play →</button></router-link
+			>
 		</div>
 	</div>
 </template>
@@ -16,7 +29,7 @@ export default {
 		return {
 			authStatus: "anonymous",
 			dates: [],
-            completedEvents: []
+			completedEvents: {},
 		};
 	},
 	async created() {
@@ -29,7 +42,7 @@ export default {
 
 		try {
 			const response = await axios.get("http://localhost:3000/auth", {
-				headers: { Authorization: `Bearer ${token}` }
+				headers: { Authorization: `Bearer ${token}` },
 			});
 			this.user = response.data.user;
 			this.authStatus = "authenticated";
@@ -45,51 +58,138 @@ export default {
 			}
 		}
 
-        const now = new Date();
-        let current = new Date("2026-10-29" + "T00:00:00Z");
+		let now = new Date();
+		const beginning = new Date("2026-10-29" + "T00:00:00Z");
 
-        while (current <= now) {
-            this.dates.push(current.toISOString().slice(0, 10));
-            current.setDate(current.getDate() + 1);
-        }
+		while (beginning <= now) {
+			this.dates.push(now.toISOString().slice(0, 10));
+			now.setDate(now.getDate() - 1);
+		}
 
-        try {
+		try {
 			const response = await axios.get("http://localhost:3000/archive", {
-				headers: { Authorization: `Bearer ${token}` }
+				headers: { Authorization: `Bearer ${token}` },
 			});
-			this.completedEvents = response.data.map(item => item.game_date);
-            console.log("Completed events fetched:", this.completedEvents);
+			this.completedEvents = Object.fromEntries(
+				response.data.map((item) => [item.game_date, item.score]),
+			);
+			console.log(this.completedEvents);
 		} catch (error) {
 			console.error("Error fetching completed events:", error);
 		}
+	},
+	methods: {
+		getScore(date) {
+			return this.completedEvents[date] || "___";
+		},
 	},
 };
 </script>
 
 <style scoped>
-.completed_event {
-	background-color: #4CAF50;
-	border: none;
-	color: white;
-	padding: 15px 32px;
+h1 {
 	text-align: center;
-	text-decoration: none;
-	display: inline-block;
-	font-size: 16px;
-	margin: 4px 2px;
-	cursor: pointer;
 }
 
-.incomplete_event {
-	background-color: #f44336;
+#archive-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+.archive-event {
+	display: grid;
+	grid-template-columns: 140px 120px 140px;
+	align-items: center;
+	gap: 20px;
+	width: min(480px, calc(100% - 32px));
+	min-height: 64px;
+	margin: 6px auto;
+	padding: 8px 20px;
+	box-sizing: border-box;
+	background-color: #1f3579;
+	color: white;
+	border-radius: 12px;
+}
+
+.archive-event p {
+	margin: 0;
+}
+
+.archive-event a {
+	display: flex;
+	justify-content: flex-end;
+	text-align: right;
+	text-decoration: none;
+	min-width: 0;
+}
+
+.completed_event,
+.incomplete_event button {
+	background-color: #4caf50;
 	border: none;
 	color: white;
-	padding: 15px 32px;
-	text-align: center;
-	text-decoration: none;
-	display: inline-block;
-	font-size: 16px;
-	margin: 4px 2px;
+	border-radius: 12px;
+	width: 140px;
+	max-width: 100%;
+	height: 44px;
+	padding: 0 12px;
+	font: inherit;
+	font-weight: 700;
 	cursor: pointer;
+	box-sizing: border-box;
+	transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.incomplete_event button {
+	background-color: #f4690d;
+}
+
+.completed_event:hover,
+.incomplete_event button:hover {
+	transform: translateY(-2px);
+	box-shadow: 5px 5px #fff2db;
+}
+
+.completed_event:hover {
+	background-color: #4caf50;
+}
+
+.incomplete_event button:hover {
+	background-color: #ff7b28;
+}
+
+@media (max-width: 520px) {
+	.archive-event {
+		grid-template-columns: minmax(100px, 1fr) 70px 100px;
+		gap: 8px;
+		width: calc(100% - 32px);
+		min-height: 60px;
+		padding: 8px 10px;
+	}
+
+	.completed_event,
+	.incomplete_event button {
+		width: 100px;
+	}
+}
+
+@media (max-width: 360px) {
+	.archive-event {
+		grid-template-columns: minmax(90px, 1fr) 60px 88px;
+		gap: 6px;
+		width: calc(100% - 20px);
+		padding: 8px;
+		font-size: 14px;
+	}
+
+	.completed_event,
+	.incomplete_event button {
+		width: 88px;
+		height: 40px;
+		padding: 0 6px;
+		font-size: 14px;
+	}
 }
 </style>

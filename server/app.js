@@ -24,7 +24,10 @@ app.get("/event", (req, res) => {
     });
 })
 
-app.get("/play", require("./game_generation"));
+const { game_generation, sendGame } = require("./game_generation");
+
+app.get("/play", game_generation);
+app.get("/playarchive", (req, res) => sendGame(req.query.date, res));
 
 app.post("/register", require("./register"));
 app.post("/login", require("./login"));

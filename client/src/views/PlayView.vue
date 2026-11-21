@@ -203,9 +203,21 @@ export default {
     },
   },
   async mounted() {
-    const setupRes = await axios.get("http://localhost:3000/play");
-    this.eventId = setupRes.data.event_id;
-    this.eventClue = setupRes.data.event_clue;
+    const date = this.$route.query.date;
+
+    if (date) {
+      const setupRes = await axios.get("http://localhost:3000/playarchive", {
+        params: { date },
+      });
+      this.eventId = setupRes.data.event_id;
+      this.eventClue = setupRes.data.event_clue;
+
+    }
+    else {
+      const setupRes = await axios.get("http://localhost:3000/play");
+      this.eventId = setupRes.data.event_id;
+      this.eventClue = setupRes.data.event_clue;
+    }
   },
 };
 </script>

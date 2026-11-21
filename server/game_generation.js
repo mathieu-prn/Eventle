@@ -10,9 +10,9 @@ const game_generation = (req, res) => {
 
 			if (todayRows.length > 0) {
 				console.log("Game already started today !");
-				sendTodayGame(res);
+				sendGame(undefined, res);
 			} else {
-				generate_missing_games(() => sendTodayGame(res));
+				generate_missing_games(() => sendGame(undefined, res));
 			}
 		},
 	);
@@ -82,15 +82,21 @@ const generate_missing_games = (callback = () => {}) => {
 	},);
 };
 
-const sendTodayGame = (res) => {
-	db.query(
-		`SELECT archive.event_id, events.alternative_name
-		 FROM archive
-		 JOIN events ON events.id = archive.event_id
-		 WHERE archive.game_date = UTC_DATE()`,
+const sendGame = (date,res) => {
+	console.log("Sending game for date:", date || "today");
+	const sql = `SELECT archive.event_id, events.alternative_name
+		FROM archive
+		JOIN events ON events.id = archive.event_id
+		WHERE archive.game_date = ${date ? "?" : "UTC_DATE()"}`;
+	const params = date ? [date] : [];
+
+	db.query(sql, params,
 		(err, rows) => {
 			if (err) {
-				return res.status(500).json({ message: "Could not load today's game." });
+				return res.status(500).json({ message: "Could not load game." });
+			}
+			if (rows.length === 0) {
+				return res.status(404).json({ message: "Game not found." });
 			}
 			return res.json({
 				event_id: rows[0].event_id,
@@ -100,4 +106,4 @@ const sendTodayGame = (res) => {
 	);
 };
 
-module.exports = game_generation;
+module.exports = { game_generation, sendGame };

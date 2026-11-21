@@ -1,7 +1,7 @@
 const db = require('./db');
 
 const archive = (req, res) => {
-    const query = "SELECT DATE_FORMAT(game_date, '%Y-%m-%d') AS game_date FROM game_completions WHERE user_id = ? ORDER BY game_date DESC";
+    const query = "SELECT DATE_FORMAT(game_date, '%Y-%m-%d') AS game_date, score FROM game_completions WHERE user_id = ? ORDER BY game_date ASC";
     const userId = req.userId;
 
     db.query(query, [userId], (err, results) => {
