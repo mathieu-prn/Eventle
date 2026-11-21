@@ -37,21 +37,23 @@ import RoundThree from "../components/RoundThree";
         v-model:yearGuess="guess1"
       ></RoundOne>
       <RoundTwo
-        v-if="actualRound == 2"
+        v-else-if="actualRound == 2"
         :eventClue="eventClue"
         :lockedGuess="lockedGuess"
         :correct="correct2"
         v-model:coordGuess="guess2"
       ></RoundTwo>
       <RoundThree
-        v-if="actualRound == 3"
+        v-else-if="actualRound == 3"
         :eventClue="eventClue"
         :lockedGuess="lockedGuess"
+        :correct="correct3"
         v-model:orderGuess="guess3"
       ></RoundThree>
+
       <button v-if="!lockedGuess" @click="checkAnswer">GUESS !</button>
       <button
-        v-if="lockedGuess"
+        v-else-if="lockedGuess && actualRound < 3"
         @click="
           () => {
             lockedGuess = !lockedGuess;
@@ -60,6 +62,9 @@ import RoundThree from "../components/RoundThree";
         "
       >
         NEXT ROUND ⇨
+      </button>
+      <button v-else-if="lockedGuess && actualRound == 3">
+        SEE YOU RESULTS !
       </button>
     </div>
   </div>
@@ -180,6 +185,24 @@ export default {
             );
           }
           break;
+        case 3:
+          try {
+            const response = await axios.post("http://localhost:3000/round3", {
+              orderGuess: this.guess3.map((el) => el.id),
+              userId: 0,
+            });
+            if (response.data) {
+              this.correct3 = response.data;
+              this.lockedGuess = !this.lockedGuess;
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert(
+              error.response.data.message ||
+                "An error occurred. Please try again later."
+            );
+          }
+          break;
         default:
           break;
       }
@@ -211,22 +234,12 @@ export default {
       });
       this.eventId = setupRes.data.event_id;
       this.eventClue = setupRes.data.event_clue;
-      this.guess3 = [
-      { id: 1, name: "Event 1" },
-      { id: 2, name: "Event 2" },
-      { id: 3, name: "Event 3" },
-      ];
-
-    }
-    else {
+      this.guess3 = setupRes.data.compare_events;
+    } else {
       const setupRes = await axios.get("http://localhost:3000/play");
       this.eventId = setupRes.data.event_id;
       this.eventClue = setupRes.data.event_clue;
-      this.guess3 = [
-      { id: 1, name: "Event 1" },
-      { id: 2, name: "Event 2" },
-      { id: 3, name: "Event 3" },
-      ];
+      this.guess3 = setupRes.data.compare_events;
     }
   },
 };

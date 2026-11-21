@@ -10,7 +10,7 @@
         <h2>Eventle</h2>
         <img src="../assets/icons/close.svg" class="icon" @click="toggleMenu" />
       </div>
-      <a class="menu-el" href="#howtoplay">How to play ?</a>
+      <a class="menu-el" href="/#howtoplay">How to play ?</a>
       <a class="menu-el" href="/archive">Archive</a>
       <a class="menu-el" href="/">Leaderboard</a>
       <button>PLAY TODAY'S ! ⇨</button>
@@ -53,7 +53,7 @@ header {
 
 a {
   text-decoration: none;
-  color:#1f3579;
+  color: #1f3579;
   font-size: 20px;
 }
 

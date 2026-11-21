@@ -33,18 +33,32 @@ import { VueDraggable } from "vue-draggable-plus";
     </div>
   </div>
   <div v-else id="round3-guessed">
-    <h2>Good job !</h2>
+    <h2>
+      You gained <span class="highlight">{{ correct.points }} </span> points !
+    </h2>
+
+    <div class="result-event-list">
+      <div
+        v-for="event in correct.correctEvents"
+        :key="event.id"
+        class="result-event"
+      >
+        <p>
+          <span class="highlight">{{ event.year }}:</span> {{ event.name }}
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-#round3 {
+#round3, #round3-guessed {
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
 }
 
-#round3 h2 {
+#round3 h2, #round3-guessed h2 {
   margin: 8px 0;
   font-size: clamp(18px, 2vw, 24px);
 }
@@ -56,53 +70,48 @@ import { VueDraggable } from "vue-draggable-plus";
   margin: 18px auto 0;
 }
 
-.draggable-list {
+.draggable-list, .result-event-list {
   width: 80%;
   max-width: 560px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  margin: 0 auto;
 }
 
-.draggable-event {
-  background-color: #fff2db;
-  color: #1f3579;
+.draggable-event, .result-event {
   width: 100%;
   min-height: 54px;
   box-sizing: border-box;
-  border: 2px solid transparent;
   border-radius: 14px;
   display: flex;
   align-items: center;
   padding: 8px 18px;
+  background: #fff2db;
+  color: #1f3579;
   box-shadow: 4px 4px 0 #f4690d;
+}
+
+.draggable-event {
+  border: 2px solid transparent;
   cursor: grab;
   transition: border-color 0.15s, transform 0.15s;
 }
 
-.draggable-event:active {
-  cursor: grabbing;
-  transform: scale(0.99);
-}
-
-.draggable-event p {
+.draggable-event p, .result-event p {
   margin: 0;
   font-weight: 700;
-}
-
-.drag-grip {
-  margin-left: auto;
-  padding-left: 12px;
-  font-size: 22px;
-  line-height: 1;
-  color: #f4690d;
-  opacity: 0.75;
 }
 
 .draggable-event:hover {
   border-color: #f4690d;
   transform: translateY(-2px);
   box-shadow: 5px 7px 0 #f4690d;
+}
+
+.draggable-event:active {
+  cursor: grabbing;
+  transform: scale(0.99);
 }
 
 .chosen {
@@ -125,14 +134,18 @@ import { VueDraggable } from "vue-draggable-plus";
   transform: scale(0.98);
 }
 
-#round3-guessed {
-  min-height: 180px;
-  display: grid;
-  place-items: center;
+#round3-guessed h2 {
+  margin-bottom: 18px;
+}
+
+.result-event {
+  border: 2px solid #fff2db;
+  text-align: left;
 }
 
 @media (max-width: 600px) {
-  .draggable-list {
+  .draggable-list,
+  .result-event-list {
     width: 92%;
   }
 }
@@ -141,13 +154,7 @@ import { VueDraggable } from "vue-draggable-plus";
 <script>
 export default {
   data() {
-    return {
-      list: [
-        { id: 1, name: "Event 1" },
-        { id: 2, name: "Event 2" },
-        { id: 3, name: "Event 3" },
-      ],
-    };
+    return {};
   },
   props: {
     eventClue: {
@@ -160,6 +167,10 @@ export default {
     },
     orderGuess: {
       type: Array,
+      required: true,
+    },
+    correct: {
+      type: Object,
       required: true,
     },
   },

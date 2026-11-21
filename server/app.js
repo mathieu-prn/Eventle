@@ -39,6 +39,7 @@ app.get("/archive", auth.requireAuth, require("./archive"));
 
 app.post("/round1", require("./round1"));
 app.post("/round2", require("./round2"));
+app.post("/round3", require("./round3"));
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
