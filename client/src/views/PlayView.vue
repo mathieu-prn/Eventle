@@ -64,7 +64,7 @@ import RoundThree from "../components/RoundThree";
         NEXT ROUND ⇨
       </button>
       <button v-else-if="lockedGuess && actualRound == 3">
-        SEE YOU RESULTS !
+        SEE YOUR RESULTS !
       </button>
     </div>
   </div>
