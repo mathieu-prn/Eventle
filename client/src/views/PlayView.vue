@@ -228,7 +228,7 @@ export default {
   async mounted() {
     const date = this.$route.query.date;
 
-    if (date) {
+    if (date && date < new Date().toISOString().slice(0, 10)) {
       const setupRes = await axios.get("http://localhost:3000/playarchive", {
         params: { date },
       });

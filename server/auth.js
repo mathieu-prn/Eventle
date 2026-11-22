@@ -34,6 +34,31 @@ const requireAuth = (req, res, next) => {
     next();
 };
 
+const requireAdminAuth = (req, res, next) => {
+    requireAuth(req, res, () => {
+        db.query(
+            'SELECT isadmin FROM users WHERE id = ?',
+            [req.userId],
+            (err, results) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({ message: 'Could not verify user.' });
+                }
+
+                if (results.length === 0) {
+                    return res.status(401).json({ message: 'User no longer exists.' });
+                }
+
+                if (!results[0].isadmin) {
+                    return res.status(403).json({ message: 'Access denied. Admin privileges required.' });
+                }
+
+                next();
+            }
+        );
+    });
+};
+
 const authenticate = (req, res) => {
     db.query(
         'SELECT id, username, isadmin FROM users WHERE id = ?',
@@ -59,4 +84,4 @@ const authenticate = (req, res) => {
     );
 };
 
-module.exports = { authenticate, requireAuth, secretKey, verifyToken };
+module.exports = { authenticate, requireAuth, requireAdminAuth, secretKey, verifyToken };

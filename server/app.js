@@ -25,6 +25,7 @@ app.get("/event", (req, res) => {
 })
 
 const { game_generation, sendGame } = require("./game_generation");
+const { getUsers, deleteUser } = require("./admindashboard");
 
 app.get("/play", game_generation);
 app.get("/playarchive", (req, res) => sendGame(req.query.date, res));
@@ -36,6 +37,8 @@ const auth = require("./auth");
 app.get("/auth", auth.requireAuth, auth.authenticate);
 app.post("/updatedetails", auth.requireAuth, require("./updatedetails"));
 app.get("/archive", auth.requireAuth, require("./archive"));
+app.get("/users", auth.requireAdminAuth, getUsers);
+app.delete("/deleteuser", auth.requireAdminAuth, deleteUser);
 
 app.post("/round1", require("./round1"));
 app.post("/round2", require("./round2"));

@@ -97,7 +97,7 @@ export default {
 
 .account-actions :deep(#admin-dashboard-container) {
   box-sizing: border-box;
-  width: min(100%, 560px);
+  width: min(100%, 680px);
   padding: 20px 28px;
   border: 2px solid #f4690d;
   border-radius: 20px;

@@ -84,6 +84,21 @@ const generate_missing_games = (callback = () => {}) => {
 
 const sendGame = (date,res) => {
 	console.log("Sending game for date:", date || "today");
+
+	if (date) {
+		console.log("Checking if game exists for date:", date);
+		const sqlcheck = 'SELECT * FROM archive WHERE game_date = ?';
+		db.query(sqlcheck, [date], (err, rows) => {
+			if (err) {
+				return res.status(500).json({ message: "Could not check game for specified date." });
+			}
+			if (rows.length === 0) {
+				console.log("No game found for date:", date, "sending today's game instead.");
+				date = undefined;
+			}
+		});
+	}
+	
 	const sql = `SELECT archive.event_id, events.alternative_name, archive.comparison1, archive.comparison2, archive.comparison3
 		FROM archive
 		JOIN events ON events.id = archive.event_id
