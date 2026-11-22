@@ -138,6 +138,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      gameDate: "",
       eventId: 0,
       eventClue: "",
       actualRound: 1,
@@ -190,7 +191,8 @@ export default {
             const response = await axios.post("http://localhost:3000/round1", {
               eventId: this.eventId,
               yearGuess: this.guess1,
-              userId: 0,
+              userId: JSON.parse(localStorage.getItem("user")).id,
+              gameDate: this.gameDate,
             });
             if (response.data) {
               this.correct1 = response.data;
@@ -213,7 +215,8 @@ export default {
               eventId: this.eventId,
               guessLat: this.guess2[0],
               guessLng: this.guess2[1],
-              userId: 0,
+              userId: JSON.parse(localStorage.getItem("user")).id,
+              gameDate: this.gameDate,
             });
             if (response.data) {
               this.correct2 = response.data;
@@ -232,7 +235,8 @@ export default {
           try {
             const response = await axios.post("http://localhost:3000/round3", {
               orderGuess: this.guess3.map((el) => el.id),
-              userId: 0,
+              userId: JSON.parse(localStorage.getItem("user")).id,
+              gameDate: this.gameDate,
             });
             if (response.data) {
               this.correct3 = response.data;
@@ -299,6 +303,8 @@ export default {
       date && date < new Date().toISOString().slice(0, 10)
         ? date
         : new Date().toISOString().slice(0, 10);
+
+    this.gameDate = gameDate;
     const savedTry = localStorage.getItem(`gameData:${gameDate}`);
 
     if (savedTry) {
@@ -319,6 +325,47 @@ export default {
         localStorage.removeItem(`gameData:${gameDate}`);
         console.error("Could not restore saved game:", error);
       }
+    }
+
+    try {
+      const restoreGame = await axios.post("http://localhost:3000/restore", {
+        userId: JSON.parse(localStorage.getItem("user")).id,
+        gameDate: this.gameDate,
+      });
+
+      if (restoreGame.data) {
+        const dataToRead = restoreGame.data[0];
+
+        this.actualRound = 1;
+        this.maxRound = dataToRead.current_round ?? 1;
+        this.lockedGuess = false;
+        if (dataToRead.current_round > 1) {
+          this.guess1 = dataToRead.guess_year ?? 0;
+          this.checkAnswer();
+          this.actualRound = 2;
+          if (dataToRead.current_round > 2) {
+            this.guess2 = [
+              dataToRead.guess_coord_lat,
+              dataToRead.guess_coord_lng,
+            ] ?? [0, 0];
+            this.checkAnswer();
+            this.actualRound = 3;
+            if (dataToRead.current_round > 3) {
+              this.guess3 =
+                [
+                  { id: dataToRead.guess_order_1, name: this.guess3[0].name },
+                  { id: dataToRead.guess_order_2, name: this.guess3[1].name },
+                  { id: dataToRead.guess_order_3, name: this.guess3[2].name },
+                  { id: dataToRead.guess_order_4, name: this.guess3[3].name },
+                ] ?? this.guess3;
+              this.checkAnswer();
+            }
+          }
+          this.actualRound = dataToRead.current_round;
+        }
+      }
+    } catch (err) {
+      console.error(err);
     }
 
     this.saveGameData();

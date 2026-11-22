@@ -2,7 +2,7 @@ const db = require('./db');
 const express = require('express');
 
 const round2 = (req, res) => {
-    const {eventId, guessLat, guessLng, userId} = req.body;
+    const {eventId, guessLat, guessLng, userId, gameDate} = req.body;
 
     function haversineDistance(lat1, lng1, lat2, lng2) {
         const R = 6371; 
@@ -50,6 +50,8 @@ const round2 = (req, res) => {
 
         const k = 1000; // at a k km distance, the player gets half of points
         points = Math.round(500 * Math.exp(-distance / k));
+
+        db.query("UPDATE game_completions SET points_round2=?, guess_coord_lat=?, guess_coord_lng=?, current_round=? WHERE user_id=? AND game_date=?", [points, guessLat, guessLng, 3, userId, gameDate], (err, ans) =>{ if (err) throw err;});
 
         res.status(200).json({
             points: points,

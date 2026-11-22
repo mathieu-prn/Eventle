@@ -2,7 +2,7 @@ const db = require('./db');
 const express = require('express');
 
 const round1 = (req, res) => {
-    const {eventId, yearGuess, userId} = req.body;
+    const {eventId, yearGuess, userId, gameDate} = req.body;
 
     db.query("SELECT year FROM events WHERE id=?", [eventId], (err, ans) => {
         if (err) throw err;
@@ -17,10 +17,12 @@ const round1 = (req, res) => {
             range = 2026 + 1000;
         }
 
-        const points = Math.max((range - Math.abs(correctYear - yearGuess) * 2) / range * 500, 0);
+        const points = Math.round(Math.max((range - Math.abs(correctYear - yearGuess) * 2) / range * 500, 0));
+
+        db.query("INSERT IGNORE INTO game_completions (user_id, game_date, points_round1, guess_year, current_round) VALUES (?, ?, ?, ?, ?)", [userId, gameDate, points, yearGuess, 2], (err, ans) =>{ if (err) throw err;});
 
         res.status(200).json({
-            points: Math.round(points),
+            points: points,
             correctAns: correctYear
         })
     })

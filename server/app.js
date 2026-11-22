@@ -13,17 +13,6 @@ db.connect((err) => {
     console.log("Succesfully connected to the database !")
 });
 
-app.get('/', (req, res) => {
-    res.send('Backend !');
-});
-
-app.get("/event", (req, res) => {
-    db.query("SELECT * FROM events WHERE id=1", (err, ans) => {
-        if (err) throw err;
-        res.json(ans);
-    });
-})
-
 const { game_generation, sendGame } = require("./game_generation");
 const { getUsers, deleteUser } = require("./admindashboard");
 
@@ -37,6 +26,7 @@ const auth = require("./auth");
 app.get("/auth", auth.requireAuth, auth.authenticate);
 app.post("/updatedetails", auth.requireAuth, require("./updatedetails"));
 app.get("/archive", auth.requireAuth, require("./archive"));
+app.post("/restore", require("./restore"));
 app.get("/users", auth.requireAdminAuth, getUsers);
 app.delete("/deleteuser", auth.requireAdminAuth, deleteUser);
 
