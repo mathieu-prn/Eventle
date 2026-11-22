@@ -2,6 +2,7 @@
 import RoundOne from "../components/RoundOne";
 import RoundTwo from "../components/RoundTwo";
 import RoundThree from "../components/RoundThree";
+import GameResults from "../components/GameResults";
 </script>
 
 <template>
@@ -28,7 +29,7 @@ import RoundThree from "../components/RoundThree";
         :class="{ activeicon: actualRound == 3 }"
         @click="reviewRound(3)"
       />
-      <p>Round {{ actualRound }} of 3</p>
+      <p v-if="actualRound < 4">Round {{ actualRound }} of 3</p>
       <RoundOne
         v-if="actualRound == 1"
         :eventClue="eventClue"
@@ -50,22 +51,31 @@ import RoundThree from "../components/RoundThree";
         :correct="correct3"
         v-model:orderGuess="guess3"
       ></RoundThree>
+      <GameResults
+        v-else-if="actualRound == 4"
+        :correct1="correct1"
+        :correct2="correct2"
+        :correct3="correct3"
+        @review-round="reviewRound"
+      ></GameResults>
 
-      <button v-if="!lockedGuess" @click="checkAnswer">GUESS !</button>
       <button
-        v-else-if="lockedGuess && actualRound < 3"
-        @click="
-          () => {
-            lockedGuess = !lockedGuess;
-            actualRound++;
-          }
+        v-if="
+          (maxRound > 3 && actualRound < 4) || (lockedGuess && actualRound == 3)
         "
+        @click="actualRound = 4"
       >
-        NEXT ROUND ⇨
-      </button>
-      <button v-else-if="lockedGuess && actualRound == 3">
         SEE YOUR RESULTS !
       </button>
+      <button v-else-if="!lockedGuess && actualRound <= 3" @click="checkAnswer">
+        GUESS !
+      </button>
+      <button v-else-if="lockedGuess && actualRound < 3" @click="nextRound">
+        NEXT ROUND ⇨
+      </button>
+      <router-link v-else to="/archive">
+        <button>PLAY ARCHIVE 👀</button>
+      </router-link>
     </div>
   </div>
 </template>
@@ -142,6 +152,37 @@ export default {
     };
   },
   methods: {
+    saveGameData() {
+      if (!this.eventId) return;
+
+      const date = this.$route.query.date;
+      const gameDate =
+        date && date < new Date().toISOString().slice(0, 10)
+          ? date
+          : new Date().toISOString().slice(0, 10);
+
+      localStorage.setItem(
+        `gameData:${gameDate}`,
+        JSON.stringify({
+          eventId: this.eventId,
+          eventClue: this.eventClue,
+          actualRound: this.actualRound,
+          maxRound: this.maxRound,
+          lockedGuess: this.lockedGuess,
+          guess1: this.guess1,
+          guess2: this.guess2,
+          guess3: this.guess3,
+          correct1: this.correct1,
+          correct2: this.correct2,
+          correct3: this.correct3,
+        })
+      );
+    },
+    nextRound() {
+      this.lockedGuess = false;
+      this.actualRound++;
+      this.saveGameData();
+    },
     async checkAnswer() {
       switch (this.actualRound) {
         case 1:
@@ -154,6 +195,7 @@ export default {
             if (response.data) {
               this.correct1 = response.data;
               this.lockedGuess = !this.lockedGuess;
+              this.saveGameData();
             }
           } catch (error) {
             console.error("Error:", error);
@@ -176,6 +218,7 @@ export default {
             if (response.data) {
               this.correct2 = response.data;
               this.lockedGuess = !this.lockedGuess;
+              this.saveGameData();
             }
           } catch (error) {
             console.error("Error:", error);
@@ -194,6 +237,7 @@ export default {
             if (response.data) {
               this.correct3 = response.data;
               this.lockedGuess = !this.lockedGuess;
+              this.saveGameData();
             }
           } catch (error) {
             console.error("Error:", error);
@@ -208,6 +252,7 @@ export default {
       }
     },
     reviewRound(round) {
+      console.log(this.maxRound);
       const maxRound = this.lockedGuess
         ? this.actualRound + 1
         : this.actualRound;
@@ -223,24 +268,60 @@ export default {
         this.actualRound = this.maxRound;
         this.lockedGuess = false;
       }
+      this.saveGameData();
+    },
+  },
+  watch: {
+    $data: {
+      deep: true,
+      handler() {
+        this.saveGameData();
+      },
     },
   },
   async mounted() {
     const date = this.$route.query.date;
+    let setupRes;
 
     if (date && date < new Date().toISOString().slice(0, 10)) {
-      const setupRes = await axios.get("http://localhost:3000/playarchive", {
+      setupRes = await axios.get("http://localhost:3000/playarchive", {
         params: { date },
       });
-      this.eventId = setupRes.data.event_id;
-      this.eventClue = setupRes.data.event_clue;
-      this.guess3 = setupRes.data.compare_events;
     } else {
-      const setupRes = await axios.get("http://localhost:3000/play");
-      this.eventId = setupRes.data.event_id;
-      this.eventClue = setupRes.data.event_clue;
-      this.guess3 = setupRes.data.compare_events;
+      setupRes = await axios.get("http://localhost:3000/play");
     }
+
+    this.eventId = setupRes.data.event_id;
+    this.eventClue = setupRes.data.event_clue;
+    this.guess3 = setupRes.data.compare_events;
+
+    const gameDate =
+      date && date < new Date().toISOString().slice(0, 10)
+        ? date
+        : new Date().toISOString().slice(0, 10);
+    const savedTry = localStorage.getItem(`gameData:${gameDate}`);
+
+    if (savedTry) {
+      try {
+        const savedGame = JSON.parse(savedTry);
+        if (savedGame.eventId === this.eventId) {
+          this.actualRound = savedGame.actualRound ?? 1;
+          this.maxRound = savedGame.maxRound ?? 1;
+          this.lockedGuess = savedGame.lockedGuess ?? false;
+          this.guess1 = savedGame.guess1 ?? 0;
+          this.guess2 = savedGame.guess2 ?? [0, 0];
+          this.guess3 = savedGame.guess3 ?? this.guess3;
+          this.correct1 = savedGame.correct1 ?? {};
+          this.correct2 = savedGame.correct2 ?? {};
+          this.correct3 = savedGame.correct3 ?? {};
+        }
+      } catch (error) {
+        localStorage.removeItem(`gameData:${gameDate}`);
+        console.error("Could not restore saved game:", error);
+      }
+    }
+
+    this.saveGameData();
   },
 };
 </script>

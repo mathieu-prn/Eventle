@@ -19,6 +19,7 @@
         type="range"
         min="0"
         max="100"
+        step="0.01"
         class="year-slider"
         id="year-slider-active"
         v-model="sliderPosition"
