@@ -1,6 +1,11 @@
 <template>
-  <h1>Browse Past Events</h1>
-  <p v-if="authStatus === 'anonymous'">Please log in to view past events.</p>
+  <main class="archive-page">
+    <h1>Browse Past Events</h1>
+    <section v-if="authStatus === 'anonymous'" class="login-required">
+      <h2>Log in to continue</h2>
+      <p>Please log in to view and play past events.</p>
+      <router-link to="/login"><button>LOG IN</button></router-link>
+    </section>
   <div v-if="authStatus === 'authenticated'" id="archive-container">
     <div v-for="date in dates" :key="date" class="archive-event">
       <p>
@@ -20,6 +25,7 @@
       >
     </div>
   </div>
+  </main>
 </template>
 
 <script>
@@ -90,8 +96,54 @@ export default {
 </script>
 
 <style scoped>
+.archive-page {
+  box-sizing: border-box;
+  min-height: calc(100vh - 90px);
+  padding: 24px 16px 48px;
+}
+
 h1 {
+  margin: 12px 0 24px;
   text-align: center;
+  color: #1f3579;
+  font-size: clamp(30px, 6vw, 48px);
+}
+
+.login-required {
+  width: min(440px, calc(100% - 16px));
+  box-sizing: border-box;
+  margin: 48px auto;
+  padding: 28px 24px;
+  border-radius: 24px;
+  background: #1f3579;
+  color: white;
+  text-align: center;
+  box-shadow: 10px 10px #f4690d;
+}
+
+.login-required h2,
+.login-required p {
+  margin: 8px 0;
+}
+
+.login-required button {
+  min-width: 180px;
+  min-height: 52px;
+  margin-top: 16px;
+  border: 2px solid black;
+  border-radius: 14px;
+  background: #f4690d;
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  box-shadow: 5px 5px white;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.login-required button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px white;
 }
 
 #archive-container {

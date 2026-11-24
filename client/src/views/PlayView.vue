@@ -84,51 +84,75 @@ import GameResults from "../components/GameResults";
 #container {
   display: flex;
   justify-content: center;
+  box-sizing: border-box;
+  padding: 16px;
 }
 
 #main-game {
-  width: 50vw;
-  height: 70vh;
+  width: min(720px, 100%);
+  min-height: 70vh;
+  box-sizing: border-box;
   background-color: #1f3579;
   color: white;
-  border-radius: 50px;
-  padding: 30px;
-  margin: 30px;
+  border-radius: 36px;
+  padding: clamp(18px, 4vw, 36px);
+  margin: clamp(8px, 3vw, 30px);
   text-align: center;
-  box-shadow: 20px 20px #f4690d;
+  box-shadow: 14px 14px #f4690d;
 }
 
 button {
-  margin: 30px;
+  margin: 24px 8px 8px;
   background-color: #f4690d;
-  border-radius: 20px;
-  width: 200px;
-  height: 75px;
-  font-size: 20px;
-  border: solid black;
-  box-shadow: 7px 7px white;
-  transition: 0.3s;
+  border-radius: 16px;
+  min-width: 180px;
+  min-height: 56px;
+  padding: 12px 20px;
+  font-size: clamp(15px, 2vw, 18px);
+  font-weight: 700;
+  border: 2px solid black;
+  box-shadow: 6px 6px white;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 button:hover {
   cursor: pointer;
-  box-shadow: 10px 10px white;
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px white;
 }
 
 .round-icon {
-  width: 40px;
-  border-radius: 20px;
-  padding: 3px;
-  margin: 5px;
+  width: clamp(38px, 7vw, 46px);
+  height: clamp(38px, 7vw, 46px);
+  box-sizing: border-box;
+  border-radius: 50%;
+  padding: 6px;
+  margin: 4px;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
-.round-icon:hover {
+.round-icon:hover,
+.activeicon {
   cursor: pointer;
   background-color: #f4690d;
+  transform: translateY(-2px);
 }
 
-.activeicon {
-  background-color: #f4690d;
+@media (max-width: 600px) {
+  #container {
+    padding: 8px;
+  }
+
+  #main-game {
+    min-height: calc(100vh - 100px);
+    border-radius: 24px;
+    margin: 8px 4px 18px;
+    box-shadow: 8px 8px #f4690d;
+  }
+
+  button {
+    width: min(220px, 82%);
+  }
 }
 </style>
 

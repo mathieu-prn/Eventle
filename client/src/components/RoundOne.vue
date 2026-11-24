@@ -63,16 +63,57 @@
 </template>
 
 <style scoped>
+#round1,
+#round1-results {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+#round1 h2,
+#round1-results h2 {
+  margin: 8px 0;
+  font-size: clamp(18px, 2.5vw, 24px);
+}
+
+.slider-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 18px auto;
+}
+
 #year-input {
-  font-size: 50px;
+  width: min(260px, 72%);
+  min-height: 58px;
+  box-sizing: border-box;
+  border: 2px solid #f4690d;
+  border-radius: 14px;
+  font-size: clamp(36px, 8vw, 50px);
   text-align: center;
 }
 
 .year-slider {
   -webkit-appearance: none;
-  width: 80%;
+  width: min(80%, 540px);
   background-color: white;
   border-radius: 20px;
+}
+
+.year-slider::-moz-range-track {
+  height: 8px;
+  background: white;
+  border: none;
+  border-radius: 20px;
+}
+
+.year-slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #f4690d;
+  border: none;
 }
 
 .year-slider::-webkit-slider-thumb,

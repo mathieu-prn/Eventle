@@ -9,7 +9,7 @@ import flagIcon from "@/assets/icons/flag.svg";
     <h2>
       <span class="highlight">{{ eventClue }} </span> ?
     </h2>
-    <div style="width: 50vw; height: 30vh">
+    <div class="map-wrap">
       <l-map
         ref="map"
         v-model:zoom="zoom"
@@ -31,7 +31,7 @@ import flagIcon from "@/assets/icons/flag.svg";
     <h2>
       You gained <span class="highlight">{{ correct.points }} </span> points !
     </h2>
-    <div style="width: 50vw; height: 30vh">
+    <div class="map-wrap">
       <l-map
         ref="map"
         v-model:zoom="zoom"
@@ -64,6 +64,43 @@ import flagIcon from "@/assets/icons/flag.svg";
     </p>
   </div>
 </template>
+
+<style scoped>
+#round2,
+#round2-guessed {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+#round2 h2,
+#round2-guessed h2 {
+  margin: 8px 0;
+  font-size: clamp(18px, 2.5vw, 24px);
+}
+
+.map-wrap {
+  width: min(100%, 620px);
+  height: clamp(280px, 38vh, 420px);
+  margin: 18px auto 10px;
+  border: 3px solid #fff2db;
+  border-radius: 18px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+#round2 p,
+#round2-guessed p {
+  line-height: 1.4;
+  margin: 10px 0 0;
+}
+
+@media (max-width: 600px) {
+  .map-wrap {
+    height: clamp(250px, 42vh, 340px);
+  }
+}
+</style>
 
 <script>
 import "leaflet/dist/leaflet.css";

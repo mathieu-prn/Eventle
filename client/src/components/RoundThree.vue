@@ -92,6 +92,24 @@ import { VueDraggable } from "vue-draggable-plus";
   box-shadow: 4px 4px 0 #f4690d;
 }
 
+@media (max-width: 600px) {
+  #event-stack,
+  #round3-guessed {
+    margin-top: 12px;
+  }
+
+  .draggable-list,
+  .result-event-list {
+    width: 92%;
+  }
+
+  .draggable-event,
+  .result-event {
+    min-height: 50px;
+    padding: 8px 12px;
+  }
+}
+
 .draggable-event {
   border: 2px solid transparent;
   cursor: grab;
@@ -141,13 +159,6 @@ import { VueDraggable } from "vue-draggable-plus";
 .result-event {
   border: 2px solid #fff2db;
   text-align: left;
-}
-
-@media (max-width: 600px) {
-  .draggable-list,
-  .result-event-list {
-    width: 92%;
-  }
 }
 </style>
 

@@ -4,6 +4,9 @@
     <span class="highlight">{{ totalPoints }}</span>
     / 1500 !
   </h2>
+  <p class="event-name">
+    The event was <strong class="highlight">{{ correct3.name }}</strong>
+  </p>
   <div class="round-result">
     <img src="../assets/icons/year.svg" alt="" class="round-icon" />
     <div>
@@ -25,12 +28,9 @@
     </div>
     <button @click="seeRound(3)">See round</button>
   </div>
-  <div>
-    <p>
-      The event was <strong>{{ correct3.name }}</strong>
-    </p>
-    <p>Did you know ?</p>
-    <p>{{ correct3.description }}</p>
+  <div class="fact-card">
+    <h3>Did you know?</h3>
+    <p class="event-description">{{ correct3.description }}</p>
   </div>
 </template>
 
@@ -86,6 +86,33 @@
 .round-result button:hover {
   transform: translate(-1px, -1px);
   box-shadow: 5px 5px #fff2db;
+}
+
+.fact-card {
+  width: min(560px, 92%);
+  box-sizing: border-box;
+  margin: 18px auto 8px;
+  padding: 18px 20px;
+  border: 2px solid #fff2db;
+  border-radius: 16px;
+  background: rgba(255, 242, 219, 0.08);
+  text-align: left;
+}
+
+.fact-card .event-name,
+.fact-card .event-description {
+  margin: 6px 0;
+  line-height: 1.45;
+}
+
+.fact-card h3 {
+  display: inline-block;
+  margin: 12px 0 6px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: #f4690d;
+  color: white;
+  font-size: 16px;
 }
 
 @media (max-width: 600px) {
