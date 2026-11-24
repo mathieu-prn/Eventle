@@ -1,71 +1,80 @@
 <template>
   <p v-if="authStatus === 'checking'"></p>
-  <NotloggedIn v-else-if="!user" @logged-in="handleLogin"/>
+  <NotloggedIn v-else-if="!user" @logged-in="handleLogin" />
   <main v-else class="account-page">
-    <h1>Welcome back <span id="username">{{ user.username }}</span>!</h1>
-    <AccountDetails v-if="details" :user="user" @closeDetails="details = false"/>
+    <h1>
+      Welcome back <span id="username">{{ user.username }}</span
+      >!
+    </h1>
+    <AccountDetails
+      v-if="details"
+      :user="user"
+      @closeDetails="details = false"
+    />
     <div v-else class="account-actions">
       <AdminDashboard v-if="user.isAdmin" />
-      <ViewAccount @logged-out="handleLogout" @accountDetails="details = true"/>
+      <ViewAccount
+        @logged-out="handleLogout"
+        @accountDetails="details = true"
+      />
     </div>
   </main>
 </template>
 
 <script>
-import axios from 'axios';
-import NotloggedIn from '../components/AuthViewNotLoggedIn.vue';
-import ViewAccount from '../components/ViewAccount.vue';
-import AdminDashboard from '../components/AdminDashboard.vue';
-import AccountDetails from '../components/AccountDetails.vue';
+import axios from "axios";
+import NotloggedIn from "../components/AuthViewNotLoggedIn.vue";
+import ViewAccount from "../components/ViewAccount.vue";
+import AdminDashboard from "../components/AdminDashboard.vue";
+import AccountDetails from "../components/AccountDetails.vue";
 
 export default {
   components: { NotloggedIn, ViewAccount, AdminDashboard, AccountDetails },
   data() {
-    return { 
+    return {
       user: null,
-      authStatus: 'checking',
-      details: false
-     };
+      authStatus: "checking",
+      details: false,
+    };
   },
   async created() {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
 
     if (!token) {
-      this.authStatus = 'anonymous';
+      this.authStatus = "anonymous";
       return;
     }
 
     try {
-      const response = await axios.get('http://localhost:3000/auth', {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axios.get("http://localhost:3000/auth", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       this.user = response.data.user;
-      this.authStatus = 'authenticated';
-      localStorage.setItem('user', JSON.stringify(this.user));
+      this.authStatus = "authenticated";
+      localStorage.setItem("user", JSON.stringify(this.user));
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('user');
-        this.authStatus = 'anonymous';
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user");
+        this.authStatus = "anonymous";
       } else {
-        console.error('Could not verify session:', error);
-        this.authStatus = 'anonymous';
+        console.error("Could not verify session:", error);
+        this.authStatus = "anonymous";
       }
     }
   },
   methods: {
     handleLogin({ user, token }) {
       this.user = user;
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('accessToken', token);
-      this.authStatus = 'authenticated';
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("accessToken", token);
+      this.authStatus = "authenticated";
     },
     handleLogout() {
       this.user = null;
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('user');
-      this.authStatus = 'anonymous';
-    }
+      localStorage.clear();
+      this.authStatus = "anonymous";
+    },
   },
 };
 </script>

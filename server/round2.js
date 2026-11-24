@@ -63,19 +63,41 @@ const round2 = (req, res) => {
         points = Math.round(500 * Math.exp(-distance / k));
 
         if (userId) {
-            db.query("UPDATE game_completions SET points_round2=?, guess_coord_lat=?, guess_coord_lng=?, current_round=? WHERE user_id=? AND game_date=?", [points, guessLat, guessLng, 3, userId, gameDate], (err) => {
-                if (err) console.error(err);
+            db.query(
+                `INSERT INTO game_completions
+                    (user_id, game_date, points_round2, guess_coord_lat, guess_coord_lng, current_round)
+                 VALUES (?, ?, ?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE
+                    points_round2 = VALUES(points_round2),
+                    guess_coord_lat = VALUES(guess_coord_lat),
+                    guess_coord_lng = VALUES(guess_coord_lng),
+                    current_round = GREATEST(current_round, VALUES(current_round))`,
+                [userId, gameDate, points, guessLat, guessLng, 3],
+                (err) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({ message: "Could not save round two" });
+                    }
+                    return res.status(200).json({
+                        points: points,
+                        distance: Math.round(distance),
+                        gradingType: solution.location_type,
+                        correctLat: solution.coordinate_lat,
+                        correctLng: solution.coordinate_lng,
+                        correctCountry: solution.country
+                    });
+                }
+            );
+        } else {
+            res.status(200).json({
+                points: points,
+                distance: Math.round(distance),
+                gradingType: solution.location_type,
+                correctLat: solution.coordinate_lat,
+                correctLng: solution.coordinate_lng,
+                correctCountry: solution.country
             });
         }
-
-        res.status(200).json({
-            points: points,
-            distance: Math.round(distance),
-            gradingType: solution.location_type,
-            correctLat: solution.coordinate_lat,
-            correctLng: solution.coordinate_lng,
-            correctCountry: solution.country
-        })
     })
 }
 

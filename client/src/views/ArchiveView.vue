@@ -6,25 +6,31 @@
       <p>Please log in to view and play past events.</p>
       <router-link to="/login"><button>LOG IN</button></router-link>
     </section>
-  <div v-if="authStatus === 'authenticated'" id="archive-container">
-    <div v-for="date in dates" :key="date" class="archive-event">
-      <p>
-        <strong>{{ date }}</strong>
-      </p>
-      <p><strong>Score:</strong>{{ getScore(date) }}</p>
-      <router-link
-        v-if="date in completedEvents"
-        :to="{ path: '/playarchive', query: { date } }"
-        ><button class="completed_event">Complete ✓</button></router-link
-      >
-      <router-link
-        v-else
-        :to="{ path: '/playarchive', query: { date } }"
-        class="incomplete_event"
-        ><button>Play →</button></router-link
-      >
+    <div v-if="authStatus === 'authenticated'" id="archive-container">
+      <div v-for="date in dates" :key="date" class="archive-event">
+        <p>
+          <strong>{{ date }}</strong>
+        </p>
+        <p><strong>Score:</strong>{{ getScore(date) }}</p>
+        <router-link
+          v-if="date in completedEvents && getScore(date) != '___'"
+          :to="{ path: '/playarchive', query: { date } }"
+          ><button class="completed_event">Complete ✓</button></router-link
+        >
+        <router-link
+          v-else-if="date in completedEvents"
+          :to="{ path: '/playarchive', query: { date } }"
+          class="incomplete_event"
+          ><button>Continue →</button></router-link
+        >
+        <router-link
+          v-else
+          :to="{ path: '/playarchive', query: { date } }"
+          class="incomplete_event"
+          ><button>Play →</button></router-link
+        >
+      </div>
     </div>
-  </div>
   </main>
 </template>
 
@@ -82,7 +88,6 @@ export default {
           item.points_round1 + item.points_round2 + item.points_round3,
         ])
       );
-      console.log(this.completedEvents);
     } catch (error) {
       console.error("Error fetching completed events:", error);
     }

@@ -96,8 +96,18 @@
 
 .year-slider {
   -webkit-appearance: none;
+  appearance: none;
   width: min(80%, 540px);
+  height: 36px;
+  margin: 0;
   background-color: white;
+  border-radius: 20px;
+}
+
+.year-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  background: white;
+  border: none;
   border-radius: 20px;
 }
 
@@ -108,18 +118,19 @@
   border-radius: 20px;
 }
 
-.year-slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: #f4690d;
-  border: none;
-}
-
-.year-slider::-webkit-slider-thumb,
-.year-slider::-moz-range-thumb {
+.year-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
+  width: 25px;
+  height: 25px;
+  margin-top: -8.5px;
+  border-radius: 20px;
+  background: #f4690d;
+  border: none;
+  transition: 0.1s;
+}
+
+.year-slider::-moz-range-thumb {
   width: 25px;
   height: 25px;
   border-radius: 20px;
@@ -133,6 +144,10 @@
   cursor: col-resize;
   width: 30px;
   height: 30px;
+}
+
+#year-slider-active::-webkit-slider-thumb:hover {
+  margin-top: -11px;
 }
 
 .result-slider {
@@ -163,10 +178,12 @@
   margin: 0;
   padding: 0;
   background: transparent;
+  opacity: 1;
   pointer-events: none;
 }
 
 .result-slider-handle::-webkit-slider-runnable-track {
+  height: 8px;
   background: transparent;
 }
 
@@ -178,12 +195,14 @@
 .guess-handle::-webkit-slider-thumb,
 .guess-handle::-moz-range-thumb {
   background: #f4690d;
+  opacity: 1;
 }
 
 .answer-handle::-webkit-slider-thumb,
 .answer-handle::-moz-range-thumb {
   background: #1f3579;
   border: 3px solid white;
+  opacity: 1;
 }
 
 .slider-legend {
@@ -258,6 +277,8 @@ export default {
       this.sliderPosition = Math.round(remapped);
     },
     correctPosition() {
+      this.yearToPos(this.yearGuess);
+
       let remapped;
       if (this.correct.correctAns <= 0)
         remapped = ((this.correct.correctAns + 10000) * 50) / 10000;

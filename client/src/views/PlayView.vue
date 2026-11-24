@@ -135,7 +135,6 @@ button:hover {
 .activeicon {
   cursor: pointer;
   background-color: #f4690d;
-  transform: translateY(-2px);
 }
 
 @media (max-width: 600px) {
@@ -180,6 +179,47 @@ export default {
     authHeaders() {
       const token = localStorage.getItem("accessToken");
       return token ? { Authorization: `Bearer ${token}` } : {};
+    },
+    async syncSavedGameToDatabase() {
+      if (!localStorage.getItem("accessToken") || !this.eventId) return;
+
+      try {
+        if (Object.keys(this.correct1).length) {
+          await axios.post(
+            "http://localhost:3000/round1",
+            {
+              eventId: this.eventId,
+              yearGuess: this.guess1,
+              gameDate: this.gameDate,
+            },
+            { headers: this.authHeaders() }
+          );
+        }
+        if (Object.keys(this.correct2).length) {
+          await axios.post(
+            "http://localhost:3000/round2",
+            {
+              eventId: this.eventId,
+              guessLat: this.guess2[0],
+              guessLng: this.guess2[1],
+              gameDate: this.gameDate,
+            },
+            { headers: this.authHeaders() }
+          );
+        }
+        if (Object.keys(this.correct3).length) {
+          await axios.post(
+            "http://localhost:3000/round3",
+            {
+              orderGuess: this.guess3.map((event) => event.id),
+              gameDate: this.gameDate,
+            },
+            { headers: this.authHeaders() }
+          );
+        }
+      } catch (error) {
+        console.error("Could not save game progress after login:", error);
+      }
     },
     saveGameData() {
       if (!this.eventId) return;
@@ -312,8 +352,6 @@ export default {
 
       if (maxRound > this.maxRound) this.maxRound = maxRound;
 
-      console.log(this.maxRound);
-
       if (round < this.maxRound) {
         this.actualRound = round;
         this.lockedGuess = true;
@@ -374,11 +412,8 @@ export default {
         localStorage.removeItem(`gameData:${gameDate}`);
         console.error("Could not restore saved game:", error);
       }
-    }
-
-    const token = localStorage.getItem("accessToken");
-
-    if (token) {
+      await this.syncSavedGameToDatabase();
+    } else if (localStorage.getItem("accessToken")) {
       try {
         const restoreGame = await axios.post(
           "http://localhost:3000/restore",
@@ -394,7 +429,7 @@ export default {
           this.maxRound = dataToRead.current_round ?? 1;
           this.lockedGuess = false;
           if (dataToRead.round1) {
-            this.guess1 = dataToRead.guess_year ?? 0;
+            this.guess1 = dataToRead.guess_year;
             this.correct1 = dataToRead.round1;
           }
           if (dataToRead.round2) {

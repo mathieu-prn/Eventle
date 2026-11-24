@@ -31,15 +31,32 @@ const round1 = (req, res) => {
         const points = Math.round(Math.max((range - Math.abs(correctYear - yearGuess) * 2) / range * 500, 0));
 
         if (userId) {
-            db.query("INSERT IGNORE INTO game_completions (user_id, game_date, points_round1, guess_year, current_round) VALUES (?, ?, ?, ?, ?)", [userId, gameDate, points, yearGuess, 2], (err) => {
-                if (err) console.error(err);
+            db.query(
+                `INSERT INTO game_completions
+                    (user_id, game_date, points_round1, guess_year, current_round)
+                 VALUES (?, ?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE
+                    points_round1 = VALUES(points_round1),
+                    guess_year = VALUES(guess_year),
+                    current_round = GREATEST(current_round, VALUES(current_round))`,
+                [userId, gameDate, points, yearGuess, 2],
+                (err) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({ message: "Could not save round one" });
+                    }
+                    return res.status(200).json({
+                        points: points,
+                        correctAns: correctYear
+                    });
+                }
+            );
+        } else {
+            res.status(200).json({
+                points: points,
+                correctAns: correctYear
             });
         }
-
-        res.status(200).json({
-            points: points,
-            correctAns: correctYear
-        })
     })
 }
 

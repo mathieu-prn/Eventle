@@ -24,15 +24,36 @@ const round3 = (req, res) => {
         score = Math.round(score);
 
         if (userId) {
-            db.query("UPDATE game_completions SET points_round3=?, guess_order_1=?, guess_order_2=?, guess_order_3=?, guess_order_4=?, current_round=? WHERE user_id=? AND game_date=?", [score, orderGuess[0], orderGuess[1], orderGuess[2], orderGuess[3], 4, userId, gameDate], (err) => {
-                if (err) console.error(err);
+            db.query(
+                `INSERT INTO game_completions
+                    (user_id, game_date, points_round3, guess_order_1, guess_order_2,
+                     guess_order_3, guess_order_4, current_round)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE
+                    points_round3 = VALUES(points_round3),
+                    guess_order_1 = VALUES(guess_order_1),
+                    guess_order_2 = VALUES(guess_order_2),
+                    guess_order_3 = VALUES(guess_order_3),
+                    guess_order_4 = VALUES(guess_order_4),
+                    current_round = GREATEST(current_round, VALUES(current_round))`,
+                [userId, gameDate, score, orderGuess[0], orderGuess[1], orderGuess[2], orderGuess[3], 4],
+                (err) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({ message: "Could not save round three" });
+                    }
+                    return res.status(200).json({
+                        points: Math.round(score),
+                        correctEvents: ans
+                    });
+                }
+            );
+        } else {
+            res.status(200).json({
+                points: Math.round(score),
+                correctEvents: ans
             });
         }
-
-        res.status(200).json({
-            points: Math.round(score),
-            correctEvents: ans
-        })
     })
 }
 
