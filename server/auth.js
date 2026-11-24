@@ -34,6 +34,23 @@ const requireAuth = (req, res, next) => {
     next();
 };
 
+const optionalAuth = (req, res, next) => {
+    const authorization = req.get('authorization');
+
+    if (!authorization) {
+        return next();
+    }
+
+    const [scheme, token] = authorization.split(' ');
+    if (scheme !== 'Bearer' || !token) {
+        return next();
+    }
+
+    const decoded = verifyToken(token);
+    req.userId = decoded && decoded.sub ? decoded.sub : undefined;
+    next();
+};
+
 const requireAdminAuth = (req, res, next) => {
     requireAuth(req, res, () => {
         db.query(
@@ -84,4 +101,4 @@ const authenticate = (req, res) => {
     );
 };
 
-module.exports = { authenticate, requireAuth, requireAdminAuth, secretKey, verifyToken };
+module.exports = { authenticate, requireAuth, requireAdminAuth, optionalAuth, secretKey, verifyToken };

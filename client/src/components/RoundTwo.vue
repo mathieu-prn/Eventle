@@ -62,7 +62,6 @@ import flagIcon from "@/assets/icons/flag.svg";
     <p>
       You were <span class="highlight"> {{ correct.distance }}</span> km away
     </p>
-    <p>{{ correct }}</p>
   </div>
 </template>
 

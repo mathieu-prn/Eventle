@@ -2,7 +2,12 @@ const db = require('./db');
 const express = require('express');
 
 const round2 = (req, res) => {
-    const {eventId, guessLat, guessLng, userId, gameDate} = req.body;
+    const {eventId, guessLat, guessLng, gameDate} = req.body;
+    const userId = req.userId;
+
+    if (!eventId || guessLat === undefined || guessLng === undefined || !gameDate) {
+        return res.status(400).json({ message: "Event, coordinates and game date are required" });
+    }
 
     function haversineDistance(lat1, lng1, lat2, lng2) {
         const R = 6371; 
@@ -20,7 +25,13 @@ const round2 = (req, res) => {
 }
 
     db.query("SELECT location_type, country, coordinate_lat, coordinate_lng FROM events WHERE id=?", [eventId], async (err, ans) => {
-        if (err) throw err;
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Could not grade round two" });
+        }
+        if (!ans.length) {
+            return res.status(404).json({ message: "Event not found" });
+        }
 
         const solution = ans[0];
 
@@ -51,7 +62,11 @@ const round2 = (req, res) => {
         const k = 1000; // at a k km distance, the player gets half of points
         points = Math.round(500 * Math.exp(-distance / k));
 
-        db.query("UPDATE game_completions SET points_round2=?, guess_coord_lat=?, guess_coord_lng=?, current_round=? WHERE user_id=? AND game_date=?", [points, guessLat, guessLng, 3, userId, gameDate], (err, ans) =>{ if (err) throw err;});
+        if (userId) {
+            db.query("UPDATE game_completions SET points_round2=?, guess_coord_lat=?, guess_coord_lng=?, current_round=? WHERE user_id=? AND game_date=?", [points, guessLat, guessLng, 3, userId, gameDate], (err) => {
+                if (err) console.error(err);
+            });
+        }
 
         res.status(200).json({
             points: points,

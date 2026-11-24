@@ -1,9 +1,7 @@
 <template>
   <h2 class="results-title">
     You scored a total of
-    <span class="highlight">{{
-      correct1.points + correct2.points + correct3.points
-    }}</span>
+    <span class="highlight">{{ totalPoints }}</span>
     / 1500 !
   </h2>
   <div class="round-result">
@@ -26,6 +24,13 @@
       Round 3 - Order: <strong>{{ correct3.points }}/500</strong>
     </div>
     <button @click="seeRound(3)">See round</button>
+  </div>
+  <div>
+    <p>
+      The event was <strong>{{ correct3.name }}</strong>
+    </p>
+    <p>Did you know ?</p>
+    <p>{{ correct3.description }}</p>
   </div>
 </template>
 
@@ -115,6 +120,15 @@ export default {
   methods: {
     seeRound(round) {
       this.$emit("review-round", round);
+    },
+  },
+  computed: {
+    totalPoints() {
+      return (
+        Number(this.correct1?.points || 0) +
+        Number(this.correct2?.points || 0) +
+        Number(this.correct3?.points || 0)
+      );
     },
   },
 };

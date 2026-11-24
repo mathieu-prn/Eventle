@@ -153,6 +153,10 @@ export default {
     };
   },
   methods: {
+    authHeaders() {
+      const token = localStorage.getItem("accessToken");
+      return token ? { Authorization: `Bearer ${token}` } : {};
+    },
     saveGameData() {
       if (!this.eventId) return;
 
@@ -188,12 +192,15 @@ export default {
       switch (this.actualRound) {
         case 1:
           try {
-            const response = await axios.post("http://localhost:3000/round1", {
-              eventId: this.eventId,
-              yearGuess: this.guess1,
-              userId: JSON.parse(localStorage.getItem("user")).id,
-              gameDate: this.gameDate,
-            });
+            const response = await axios.post(
+              "http://localhost:3000/round1",
+              {
+                eventId: this.eventId,
+                yearGuess: this.guess1,
+                gameDate: this.gameDate,
+              },
+              { headers: this.authHeaders() }
+            );
             if (response.data) {
               this.correct1 = response.data;
               this.lockedGuess = !this.lockedGuess;
@@ -208,16 +215,18 @@ export default {
           }
 
           break;
-
         case 2:
           try {
-            const response = await axios.post("http://localhost:3000/round2", {
-              eventId: this.eventId,
-              guessLat: this.guess2[0],
-              guessLng: this.guess2[1],
-              userId: JSON.parse(localStorage.getItem("user")).id,
-              gameDate: this.gameDate,
-            });
+            const response = await axios.post(
+              "http://localhost:3000/round2",
+              {
+                eventId: this.eventId,
+                guessLat: this.guess2[0],
+                guessLng: this.guess2[1],
+                gameDate: this.gameDate,
+              },
+              { headers: this.authHeaders() }
+            );
             if (response.data) {
               this.correct2 = response.data;
               this.lockedGuess = !this.lockedGuess;
@@ -233,13 +242,28 @@ export default {
           break;
         case 3:
           try {
-            const response = await axios.post("http://localhost:3000/round3", {
-              orderGuess: this.guess3.map((el) => el.id),
-              userId: JSON.parse(localStorage.getItem("user")).id,
-              gameDate: this.gameDate,
-            });
-            if (response.data) {
-              this.correct3 = response.data;
+            const response = await axios.post(
+              "http://localhost:3000/round3",
+              {
+                orderGuess: this.guess3.map((el) => el.id),
+                gameDate: this.gameDate,
+              },
+              { headers: this.authHeaders() }
+            );
+
+            const finalResponse = await axios.post(
+              "http://localhost:3000/finalanswer",
+              {
+                eventId: this.eventId,
+              }
+            );
+
+            if (response.data && finalResponse.data) {
+              this.correct3 = {
+                ...response.data,
+                name: finalResponse.data.event_name,
+                description: finalResponse.data.description,
+              };
               this.lockedGuess = !this.lockedGuess;
               this.saveGameData();
             }
@@ -250,6 +274,7 @@ export default {
                 "An error occurred. Please try again later."
             );
           }
+
           break;
         default:
           break;
@@ -327,45 +352,42 @@ export default {
       }
     }
 
-    try {
-      const restoreGame = await axios.post("http://localhost:3000/restore", {
-        userId: JSON.parse(localStorage.getItem("user")).id,
-        gameDate: this.gameDate,
-      });
+    const token = localStorage.getItem("accessToken");
 
-      if (restoreGame.data) {
-        const dataToRead = restoreGame.data[0];
+    if (token) {
+      try {
+        const restoreGame = await axios.post(
+          "http://localhost:3000/restore",
+          {
+            gameDate: this.gameDate,
+          },
+          { headers: this.authHeaders() }
+        );
 
-        this.actualRound = 1;
-        this.maxRound = dataToRead.current_round ?? 1;
-        this.lockedGuess = false;
-        if (dataToRead.current_round > 1) {
-          this.guess1 = dataToRead.guess_year ?? 0;
-          this.checkAnswer();
-          this.actualRound = 2;
-          if (dataToRead.current_round > 2) {
+        if (restoreGame.data && restoreGame.data.length > 0) {
+          const dataToRead = restoreGame.data[0];
+          this.actualRound = Math.min(dataToRead.current_round ?? 1, 4);
+          this.maxRound = dataToRead.current_round ?? 1;
+          this.lockedGuess = false;
+          if (dataToRead.round1) {
+            this.guess1 = dataToRead.guess_year ?? 0;
+            this.correct1 = dataToRead.round1;
+          }
+          if (dataToRead.round2) {
             this.guess2 = [
               dataToRead.guess_coord_lat,
               dataToRead.guess_coord_lng,
-            ] ?? [0, 0];
-            this.checkAnswer();
-            this.actualRound = 3;
-            if (dataToRead.current_round > 3) {
-              this.guess3 =
-                [
-                  { id: dataToRead.guess_order_1, name: this.guess3[0].name },
-                  { id: dataToRead.guess_order_2, name: this.guess3[1].name },
-                  { id: dataToRead.guess_order_3, name: this.guess3[2].name },
-                  { id: dataToRead.guess_order_4, name: this.guess3[3].name },
-                ] ?? this.guess3;
-              this.checkAnswer();
-            }
+            ];
+            this.correct2 = dataToRead.round2;
           }
-          this.actualRound = dataToRead.current_round;
+          if (dataToRead.round3) {
+            this.correct3 = dataToRead.round3;
+            this.guess3 = dataToRead.round3.correctEvents;
+          }
         }
+      } catch (err) {
+        console.error(err);
       }
-    } catch (err) {
-      console.error(err);
     }
 
     this.saveGameData();
