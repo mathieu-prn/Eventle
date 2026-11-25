@@ -85,7 +85,9 @@ export default {
       this.completedEvents = Object.fromEntries(
         response.data.map((item) => [
           item.game_date,
-          item.points_round1 + item.points_round2 + item.points_round3,
+          item.current_round == 4
+            ? item.points_round1 + item.points_round2 + item.points_round3
+            : "",
         ])
       );
     } catch (error) {

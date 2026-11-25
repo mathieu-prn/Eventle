@@ -22,7 +22,7 @@ const round1 = (req, res) => {
         const min_tol = 500;
 
         const error = Math.abs(correctYear - yearGuess); 
-        const tolerance = Math.max((present - correctYear) - min_tol, min_tol);
+        const tolerance = Math.max((2026 - correctYear) - min_tol, min_tol);
 
         const points = Math.round(Math.max(500 * (1 - error/tolerance), 0));
 
