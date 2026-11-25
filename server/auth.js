@@ -78,7 +78,7 @@ const requireAdminAuth = (req, res, next) => {
 
 const authenticate = (req, res) => {
     db.query(
-        'SELECT id, username, isadmin FROM users WHERE id = ?',
+        'SELECT id, username, email, isadmin FROM users WHERE id = ?',
         [req.userId],
         (err, results) => {
             if (err) {
@@ -94,6 +94,7 @@ const authenticate = (req, res) => {
                 user: {
                     id: results[0].id,
                     username: results[0].username,
+                    email: results[0].email,
                     isAdmin: Boolean(results[0].isadmin)
                 }
             });
