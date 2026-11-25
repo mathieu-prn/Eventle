@@ -10,6 +10,7 @@
       v-if="details"
       :user="user"
       @closeDetails="details = false"
+      @updateUser="user = $event"
     />
     <div v-else class="account-actions">
       <AdminDashboard v-if="user.isAdmin" />

@@ -12,7 +12,6 @@
       </div>
       <a class="menu-el" href="/#howtoplay">How to play ?</a>
       <a class="menu-el" href="/archive">Archive</a>
-      <a class="menu-el" href="/">Leaderboard</a>
       <router-link to="/play">
         <button>PLAY TODAY'S ! ⇨</button>
       </router-link>

@@ -19,22 +19,22 @@ const game_generation = (req, res) => {
 };
 
 const generate_game = (gameDate, callback = () => {}) => {
-	const eventId = Math.floor(Math.random() * 249 + 1);
-	let comparison1 = Math.floor(Math.random() * 249 + 1);
+	const eventId = Math.floor(Math.random() * 241 + 1);
+	let comparison1 = Math.floor(Math.random() * 241 + 1);
 	while (comparison1 === eventId) {
-		comparison1 = Math.floor(Math.random() * 249 + 1);
+		comparison1 = Math.floor(Math.random() * 241 + 1);
 	}
-	let comparison2 = Math.floor(Math.random() * 249 + 1);
+	let comparison2 = Math.floor(Math.random() * 241 + 1);
 	while (comparison2 === eventId || comparison2 === comparison1) {
-		comparison2 = Math.floor(Math.random() * 249 + 1);
+		comparison2 = Math.floor(Math.random() * 241 + 1);
 	}
-	let comparison3 = Math.floor(Math.random() * 249 + 1);
+	let comparison3 = Math.floor(Math.random() * 241 + 1);
 	while (
 		comparison3 === eventId ||
 		comparison3 === comparison1 ||
 		comparison3 === comparison2
 	) {
-		comparison3 = Math.floor(Math.random() * 249 + 1);
+		comparison3 = Math.floor(Math.random() * 241 + 1);
 	}
 
 	db.query(
@@ -85,6 +85,40 @@ const generate_missing_games = (callback = () => {}) => {
 const sendGame = (date,res) => {
 	console.log("Sending game for date:", date || "today");
 
+	const loadGame = () => {
+		const sql = `SELECT archive.event_id, events.alternative_name, archive.comparison1, archive.comparison2, archive.comparison3
+			FROM archive
+			JOIN events ON events.id = archive.event_id
+			WHERE archive.game_date = ${date ? "?" : "UTC_DATE()"}`;
+		const params = date ? [date] : [];
+
+		db.query(sql, params,
+			(err, rows) => {
+				if (err) {
+					return res.status(500).json({ message: "Could not load game." });
+				}
+				if (rows.length === 0) {
+					return res.status(404).json({ message: "Game not found." });
+				}
+
+				db.query("SELECT id, name from events WHERE id in (?, ?, ?) ORDER BY RAND()", [rows[0].comparison1, rows[0].comparison2, rows[0].comparison3], (err2, rows2) => {
+					if (err2) {
+						return res.status(500).json({ message: "Could not load game." });
+					}
+					if (rows2.length === 0) {
+						return res.status(404).json({ message: "Game not found." });
+					}
+
+					return res.json({
+						event_id: rows[0].event_id,
+						event_clue: rows[0].alternative_name,
+						compare_events: [{id: rows[0].event_id, name: rows[0].alternative_name}, rows2[0], rows2[1], rows2[2]]
+					});
+				});
+			},
+		);
+	};
+
 	if (date) {
 		console.log("Checking if game exists for date:", date);
 		const sqlcheck = 'SELECT * FROM archive WHERE game_date = ?';
@@ -96,40 +130,11 @@ const sendGame = (date,res) => {
 				console.log("No game found for date:", date, "sending today's game instead.");
 				date = undefined;
 			}
+			loadGame();
 		});
+		return;
 	}
-	
-	const sql = `SELECT archive.event_id, events.alternative_name, archive.comparison1, archive.comparison2, archive.comparison3
-		FROM archive
-		JOIN events ON events.id = archive.event_id
-		WHERE archive.game_date = ${date ? "?" : "UTC_DATE()"}`;
-	const params = date ? [date] : [];
-
-	db.query(sql, params,
-		(err, rows) => {
-			if (err) {
-				return res.status(500).json({ message: "Could not load game." });
-			}
-			if (rows.length === 0) {
-				return res.status(404).json({ message: "Game not found." });
-			}
-
-			db.query("SELECT id, name from events WHERE id in (?, ?, ?) ORDER BY RAND()", [rows[0].comparison1, rows[0].comparison2, rows[0].comparison3], (err2, rows2) => {
-				if (err2) {
-					return res.status(500).json({ message: "Could not load game." });
-				}
-				if (rows2.length === 0) {
-					return res.status(404).json({ message: "Game not found." });
-				}
-				
-				return res.json({
-					event_id: rows[0].event_id,
-					event_clue: rows[0].alternative_name,
-					compare_events: [{id: rows[0].event_id, name: rows[0].alternative_name}, rows2[0], rows2[1], rows2[2]] 
-				});
-			})
-		},
-	);
+	loadGame();
 };
 
 module.exports = { game_generation, sendGame };

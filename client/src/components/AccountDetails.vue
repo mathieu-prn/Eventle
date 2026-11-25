@@ -40,7 +40,7 @@
         </form>
     </template>
     <br>
-    <button v-if="modifying !== 'none'" @click="modifying='none'">Cancel</button>
+    <button v-if="modifying !== 'none'" @click="resetForm">Cancel</button>
   </div>
 </template>
 
@@ -63,6 +63,13 @@ import axios from 'axios';
       }
     },
     methods :{
+        resetForm() {
+            this.modifying = "none";
+            this.newUsername = "";
+            this.newEmail = "";
+            this.newPassword = "";
+            this.oldPassword = "";
+        },
         async saveChanges() {
             try {
             const payload = {};
@@ -85,7 +92,11 @@ import axios from 'axios';
             );
             if (response.data.success) {
                 alert('Modification successful!');
-                this.$emit('updateUser', response.data.user);
+                const updatedUser = { ...this.user };
+                if (this.modifying === 'username') updatedUser.username = this.newUsername;
+                if (this.modifying === 'email') updatedUser.email = this.newEmail;
+                this.$emit('updateUser', updatedUser);
+                this.resetForm();
             } else {
                 alert('Modification failed. Please try again.');
             }
