@@ -19,23 +19,19 @@ const round1 = (req, res) => {
         }
 
         const correctYear = ans[0].year;
-        let range = 0;
-        if (correctYear < -2000) {
-            const range = 2026 + 10000;
-        } else if (correctYear < - 1000){
-            range = 2026 + 2000;
-        } else {
-            range = 2026 + 1000;
-        }
+        const min_tol = 500;
 
-        const points = Math.round(Math.max((range - Math.abs(correctYear - yearGuess) * 2) / range * 500, 0));
+        const error = Math.abs(correctYear - yearGuess); 
+        const tolerance = Math.max((present - correctYear) - min_tol, min_tol);
+
+        const points = Math.round(Math.max(500 * (1 - error/tolerance), 0));
 
         if (userId) {
             db.query(
                 `INSERT INTO game_completions
                     (user_id, game_date, points_round1, guess_year, current_round)
                  VALUES (?, ?, ?, ?, ?)
-                 ON DUPLICATE KEY UPDATE
+                    ON DUPLICATE KEY UPDATE
                     points_round1 = VALUES(points_round1),
                     guess_year = VALUES(guess_year),
                     current_round = GREATEST(current_round, VALUES(current_round))`,

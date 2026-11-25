@@ -25,7 +25,6 @@ import flagIcon from "@/assets/icons/flag.svg";
         <l-marker v-if="showMarker" :lat-lng="localCoord"></l-marker>
       </l-map>
     </div>
-    <p>You selected {{ localCoord }}</p>
   </div>
   <div v-else id="round2-guessed">
     <h2>
