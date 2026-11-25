@@ -61,6 +61,7 @@ export default {
           );
         }
       }
+      this.$emit("registered");
     },
   },
 };

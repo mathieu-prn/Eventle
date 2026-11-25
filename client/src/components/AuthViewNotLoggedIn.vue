@@ -8,7 +8,7 @@
 		<section class="auth-card" aria-label="Account access">
 			<component
 				:is="isLogin ? 'LoginForm' : 'RegisterForm'"
-				@logged-in="handleLogin" />
+				@logged-in="handleLogin" @registered="isLogin = !isLogin" />
 			<button class="switch-button" type="button" @click="toggleForm">
 				{{
 					isLogin
